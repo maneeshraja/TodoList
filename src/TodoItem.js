@@ -22,12 +22,14 @@ export default class TodoItem extends Component {
 
     if(this.props.checked) {
       this.setState({checked: true});
+      this.checkbox.current.checked = true;
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if(nextProps.text !== this.props.text) {
+    if(nextProps.text !== this.props.text || nextProps.checked !== this.props.checked) {
       this.setState({text: nextProps.text, checked: nextProps.checked});
+      this.checkbox.current.checked = nextProps.checked;
     }
   }
 
@@ -45,7 +47,6 @@ export default class TodoItem extends Component {
                                   this.props.callBack(this.props.id, e.currentTarget.checked);
                                 }
                               }}
-            defaultChecked={this.props.checked}
             dataId={this.props.id}
           />
           {this.state.text}

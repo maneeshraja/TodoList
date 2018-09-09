@@ -32,7 +32,6 @@ h1 {
   font-size: 15px;
   cursor: pointer;
   padding: 5px 7px;
-  width: 80px;
   color: #3E403F;
   transition: .2s all;
   border-radius: 14px;
@@ -46,16 +45,15 @@ h1 {
   }
 
   .toDoItems{
-      margin: 10px 3em;
+      margin: 15px 3em;
   }
 
   .todoItemLabel {
-    font-size: 20px;
+    font-size: 18px;
     color: black;
     user-select: none;
     cursor: pointer;
     margin-left: 18px;
-
   }
 
   .toDoItemInput {
@@ -70,14 +68,29 @@ h1 {
     user-select: none;
    }
 
+  .toDoPrevious {
+    padding: 0px 20px;
+  }
+
+  .toDoPreviousPages {
+    padding: 0px 3px;
+  }
+
+  .toDoPreviousPages:hover {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+  }
+
   .pagestyles{
     margin: 100px auto;
-    width: 29%;
   }
 
   .folder {
-    margin: 10px 4.1em;
+    margin: 15px 3.5em;
     cursor: pointer;
+    font-size: 18px;
+    user-select: none;
   }
 
   .folderImg {

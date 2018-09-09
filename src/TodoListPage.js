@@ -1,20 +1,12 @@
 import React, {Component} from 'react';
 import TodoItem from './TodoItem.js';
+import Dropdown from './Dropdown';
 import './App.css';
 
 export default class ToDoListPage  extends Component {
 
   constructor(props){
     super(props);
-
-    /*
-          [{text: "Laundry", checked: false},
-           {text: "Cook", checked: false},
-           {text: "Passport verification", checked: true},
-           {text: "HomeWork", checked: false},
-           {text: "React Project", checked: true}
-         ]
-    */
 
     this.state = {
       todo: [{text: "Laundry", checked: false, isFolder: false, parent: 0, id: 0},
@@ -31,7 +23,8 @@ export default class ToDoListPage  extends Component {
       previousFolders: [],
       folderCount: 4,
       folderChecked: false,
-      identity: 9
+      identity: 9,
+      dropdownFilterValue: 1
     }
 
     this.inputText = React.createRef();
@@ -41,6 +34,13 @@ export default class ToDoListPage  extends Component {
     this.itemOnClick = this.itemOnClick.bind(this);
     this.handleclick = this.handleclick.bind(this);
     this.handlePager = this.handlePager.bind(this);
+    this.dropdownFilterChanged = this.dropdownFilterChanged.bind(this);
+
+    this.dropdownList = [{id: 1, item: "Show all", disabled: false, active: true},
+                          {id: 2, item: "Folders only", disabled: false},
+                          {id: 3, item: "Items only", disabled: false},
+                          {id: 4, item: "Unchecked items", disabled: false},
+                          {id: 5, item: "Checked items", disabled: false}];
   }
 
   componentDidMount() {
@@ -103,15 +103,41 @@ export default class ToDoListPage  extends Component {
     this.setState({currentFolder: id, currentFolderName: name, previousFolders: this.state.previousFolders.slice(0, index)});
   }
 
+  dropdownFilterChanged(selectedId) {
+    this.setState({dropdownFilterValue: selectedId});
+  }
+
   render(){
 
-    let filteredList = this.state.todo.filter((value) => {
+    let folderSpecificList = this.state.todo.filter((value) => {
                                                               return value.parent === this.state.currentFolder;
                                                             });
-    console.log(this.state.todo);
-    if (!filteredList) {
-      filteredList = [];
+    if (!folderSpecificList) {
+      folderSpecificList = [];
     }
+
+    let filterSpecificList = folderSpecificList.filter((value) => {
+                                                        if (value.isFolder && this.state.dropdownFilterValue === 2) {
+                                                          return true;
+                                                        }
+
+                                                        if (value.checked && this.state.dropdownFilterValue === 5) {
+                                                          return true;
+                                                        }
+
+                                                        if (!value.checked && !value.isFolder && this.state.dropdownFilterValue === 4) {
+                                                          return true;
+                                                        }
+
+                                                        if (!value.isFolder && this.state.dropdownFilterValue === 3) {
+                                                          return true;
+                                                        }
+
+                                                        if (this.state.dropdownFilterValue === 1) {
+                                                          return true;
+                                                        }
+
+                                                      });
 
     return(
       <div className="pagestyles">
@@ -120,18 +146,22 @@ export default class ToDoListPage  extends Component {
                                                             if (e.keyCode === 13) {
                                                                 this.handleclick();
                                                             }
-                                                          }} type="text" placeholder="Holiday Trip" ref={this.inputText} />
+                                                          }} type="text" placeholder="Laundry" ref={this.inputText} />
           <div className="toDoFolder">
             <label> <input type="checkbox" ref={this.folder} onChange={(e) => this.setState({folderChecked: e.currentTarget.checked})} /> Folder </label>
           </div>
           <button className="toDoButton" onClick={this.handleclick}> Add{`${this.state.folderChecked?' Folder':' Item'}`} </button>
+        </div>
+        <div className="toDoFilter">
+          <label><b> Filter: </b></label>
+          <Dropdown isDisabled={this.state.isDisabled} dropdownSelectedItem={this.state.dropdownValue} dropdownList={this.dropdownList} callBack={this.dropdownFilterChanged} />
         </div>
         <div className="toDoPrevious">
           {this.state.previousFolders.map((value, index) => <span>/<span className="toDoPreviousPages" onClick={() => this.handlePager(index, value.id, value.name)}>{value.name}</span></span>)}
           {"/ "}<b>{this.state.currentFolderName}</b>
         </div>
         <div>
-          {filteredList.map((value, index) => value.isFolder?(
+          {filterSpecificList.map((value, index) => value.isFolder?(
                 <div className="folder" key={index} folderid={value.folderId} foldertext={value.text} onClick={this.handleFolderClick}>
                   <img src="folder.png" className="folderImg" />
                   {value.text}

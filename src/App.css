@@ -68,6 +68,10 @@ h1 {
     user-select: none;
    }
 
+   .toDoFilter label {
+     margin-left: 25px;
+   }
+
   .toDoPrevious {
     padding: 0px 20px;
   }
@@ -75,6 +79,8 @@ h1 {
   .toDoPreviousPages {
     padding: 0px 3px;
   }
+
+
 
   .toDoPreviousPages:hover {
     text-decoration: underline;

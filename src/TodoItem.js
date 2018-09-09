@@ -47,7 +47,7 @@ export default class TodoItem extends Component {
                                   this.props.callBack(this.props.id, e.currentTarget.checked);
                                 }
                               }}
-            dataId={this.props.id}
+            data-id={this.props.id}
           />
           {this.state.text}
         </label>

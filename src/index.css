@@ -3,3 +3,44 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.LoginPage{
+  margin:150px 100px;
+  border: 2px solid darkgray;
+  width: 200px;
+  height: 300px;
+  padding: 20px;
+}
+label{
+    margin: 15px;
+}
+
+input {
+  margin: 5px;
+  padding: 10px;
+  border-top: none;
+  border-bottom:2px solid darkgray;;
+  border-left: none;
+  border-right: none;
+  outline: none;
+  text-align: center;
+
+}
+
+button{
+  background-color: transparent;
+  box-shadow: none;
+  outline: none;
+  display: block;
+  margin: auto;
+  margin-top: 15px;
+  margin-bottom: 30px;
+  border: 2px solid darkgray;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 15px;
+  color: #3E403F;
+  transition: .2s all;
+  border-radius: 14px;
+
+}

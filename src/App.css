@@ -89,7 +89,8 @@ h1 {
   }
 
   .pagestyles{
-    margin: 100px auto;
+    margin: auto;
+    margin-top: 50px;
   }
 
   .folder {
@@ -144,6 +145,30 @@ button{
 .checked {
   text-decoration: line-through;
   color: lightgray;
+}
+
+.noRecordsToDisplay {
+  margin-left: 4em;
+  margin-top: 20px;
+  font-style: italic;
+  font-size: 15px;
+  color: lightgray;
+}
+
+.d_block {
+  display: block !important;
+}
+
+.d_none {
+  display: none !important;
+}
+
+.d_inline {
+  display: inline !important;
+}
+
+.d_inline_block {
+  display: inline-block !important;
 }
 
 

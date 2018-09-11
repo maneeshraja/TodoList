@@ -1,0 +1,54 @@
+// out: ./styles.css, compress: true
+
+.vertical-align($position: relative) {
+  position: $position;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.modal{
+  user-select: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top:0px;
+  left: 0px;
+  background-color: fade(Black, 30%);
+
+  &.open {
+    display: block !important;
+  }
+  &.close {
+    display: none !important;
+
+  }
+  &Body{
+    position: relative;
+    padding: 10px;
+    width: 50%;
+    height: 60%;
+    background-color: white;
+    margin: auto;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+
+    &Close {
+      text-align: right;
+      background-color: #F7F7F7;
+      float: right;
+      color: black;
+      border-radius: 50%;
+      padding: 5px 10px;
+      font-size: 20px;
+      user-select: none;
+      cursor: pointer;
+      &:hover{
+        background-color: darken(#F7F7F7,20%);
+      }
+    }
+  }
+}

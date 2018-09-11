@@ -139,6 +139,8 @@ export default class ToDoListPage  extends Component {
 
                                                       });
 
+    const message = "No records to display!";
+
     return(
       <div className="pagestyles">
         <div>
@@ -160,7 +162,10 @@ export default class ToDoListPage  extends Component {
           {this.state.previousFolders.map((value, index) => <span>/<span className="toDoPreviousPages" onClick={() => this.handlePager(index, value.id, value.name)}>{value.name}</span></span>)}
           {"/ "}<b>{this.state.currentFolderName}</b>
         </div>
-        <div>
+        <div className={`noRecordsToDisplay ${filterSpecificList.length > 0?'d_none':'d_block'}`}>
+          {message}
+        </div>
+        <div className={`${filterSpecificList.length === 0?'d_none':'d_block'}`}>
           {filterSpecificList.map((value, index) => value.isFolder?(
                 <div className="folder" key={index} folderid={value.folderId} foldertext={value.text} onClick={this.handleFolderClick}>
                   <img src="folder.png" className="folderImg" />

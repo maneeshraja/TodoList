@@ -4,37 +4,36 @@ body {
   font-family: sans-serif;
 }
 
-.LoginPage{
+.LoginBox{
   margin:150px 100px;
   border: 2px solid darkgray;
   width: 200px;
-  height: 300px;
+  height: 330px;
   padding: 20px;
-}
-label{
-    margin: 15px;
+  border-radius: 20px;
 }
 
+
 input {
-  margin: 5px;
-  padding: 10px;
+  padding: 4px 10px;
   border-top: none;
   border-bottom:2px solid darkgray;;
   border-left: none;
   border-right: none;
   outline: none;
   text-align: center;
-
+  margin-top: 15px;
+  font-size: 15px;
 }
 
-button{
+.loginButton, .registerButton{
   background-color: transparent;
   box-shadow: none;
   outline: none;
   display: block;
   margin: auto;
   margin-top: 15px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   border: 2px solid darkgray;
   font-size: 13px;
   cursor: pointer;
@@ -42,5 +41,33 @@ button{
   color: #3E403F;
   transition: .2s all;
   border-radius: 14px;
+}
+.registerButton{
+  margin-top: 25px;
+}
 
+.smallLinks{
+    font-size:  13px;
+    margin-bottom:  10px;
+    display: block;
+    float: left;
+}
+.registerLink{
+  margin-right: 90px;
+}
+.loginHeading{
+    text-align: center;
+    margin: 0px;
+    margin-bottom: 20px;
+}
+td {
+  text-align: left;
+  padding-left: 50px;
+}
+
+.registrationForm{
+  width: 100%;
+}
+.registerModal{
+  margin:auto;
 }

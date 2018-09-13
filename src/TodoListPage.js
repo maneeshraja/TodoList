@@ -1,9 +1,25 @@
 import React, {Component} from 'react';
 import TodoItem from './TodoItem.js';
 import Dropdown from './Dropdown';
+//import Banner from './Banner';
+import {retrieveTodo, getInitialState} from './Actions/todo.js';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import './App.css';
 
-export default class ToDoListPage  extends Component {
+class ToDoListPage  extends Component {
+
+/*
+[{text: "Laundry", checked: false, isFolder: false, parent: 0, id: 0},
+       {text: "Cook", checked: true, isFolder: false, parent: 0, id: 1},
+       {text: "DMV", isFolder: true, parent: 0, folderId: 1, id: 2},
+       {text: "Health", isFolder: true, parent: 0, folderId: 2, id: 3},
+       {text: "HomeWork", isFolder: true, parent: 1, folderId: 3, id: 4},
+       {text: "React Project", isFolder: true, parent: 3, folderId: 4, id: 5},
+       {text: "Expired DL", checked: true, isFolder: false, parent: 3, id: 6},
+       {text: "Dallas", checked: false, isFolder: false, parent: 2, id: 7},
+       {text: "San Antonio", checked: false, isFolder: false, parent: 2, id: 8}]
+*/
 
   constructor(props){
     super(props);
@@ -21,9 +37,9 @@ export default class ToDoListPage  extends Component {
       currentFolder: 0,
       currentFolderName: "Home",
       previousFolders: [],
-      folderCount: 4,
+      folderCount: 0,
       folderChecked: false,
-      identity: 9,
+      identity: 0,
       dropdownFilterValue: 1
     }
 
@@ -45,6 +61,18 @@ export default class ToDoListPage  extends Component {
 
   componentDidMount() {
     this.inputText.current.focus();
+    this.props.retrieveTodo(this.state.currentFolder);
+    this.props.getInitialState();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.initialState && this.state.folderCount !== nextProps.initialState.folder_count) {
+      this.setState({folderCount: nextProps.initialState.folder_count});
+    }
+
+    if(nextProps.initialState && this.state.identity !== nextProps.initialState.identity_count) {
+      this.setState({identity: nextProps.initialState.identity_count});
+    }
   }
 
   itemOnClick(n, status) {
@@ -103,6 +131,7 @@ export default class ToDoListPage  extends Component {
     this.setState({currentFolder: id, currentFolderName: name, previousFolders: this.state.previousFolders.slice(0, index)});
   }
 
+
   dropdownFilterChanged(selectedId) {
     this.setState({dropdownFilterValue: selectedId});
   }
@@ -140,11 +169,12 @@ export default class ToDoListPage  extends Component {
                                                       });
 
     const message = "No records to display!";
-
+    //console.log(this.props.items);
+    //console.log(this.props.initialState);
     return(
       <div className="pagestyles">
         <div>
-          <input className="toDoInput" onKeyDown={(e) => {
+          <input maxLength="100" onChange={this.handleMaxLength} className="toDoInput" onKeyDown={(e) => {
                                                             if (e.keyCode === 13) {
                                                                 this.handleclick();
                                                             }
@@ -184,3 +214,15 @@ export default class ToDoListPage  extends Component {
     );
   }
 }
+
+function mapStateToProps(state) {
+  //console.log(state);
+  return { items: state.todoReducer.items,
+           initialState: state.todoReducer.initialState };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({retrieveTodo, getInitialState}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps) (ToDoListPage);

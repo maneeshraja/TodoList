@@ -1,0 +1,51 @@
+// out: ./styles.css, compress: true
+
+.banner {
+  color: #31708f;
+  background: #d9edf7;
+  border: .5px solid #bce8f1;
+  text-align: center;
+  width: 50%;
+  border-radius: 5px;
+  margin: auto;
+  height: 30px;
+  line-height: 30px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-right: 20px;
+  position: relative;
+
+  &.green {
+    color: #3c763d;
+    background: #dff0d8;
+    border: .5px solid #d6e9c6;
+  }
+
+  &.red {
+    color: #a94442;
+    background: #f2dede;
+    border: .5px solid #ebccd1;
+  }
+
+  &.orange {
+    color: #8a6d3b;
+    background: #fcf8e3;
+    border: .5px solid #faebcc;
+  }
+
+  &ButtonClose{
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s all;
+    transform: rotate(45deg);
+    color: lighten(#3E403F, 20%);
+
+    &:hover {
+      transition: 0.3s all;
+      color: darken(#3E403F, 5%);
+    }
+  }
+}

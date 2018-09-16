@@ -20,17 +20,18 @@
   &.open {
     display: block !important;
   }
+
   &.close {
     display: none !important;
-
   }
+
   &Body{
     position: relative;
     padding: 10px;
-    width: 50%;
-    height: 60%;
+    width: 420px;
     background-color: white;
     margin: auto;
+    border-radius: 4px;
     top: 50%;
     -webkit-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
@@ -38,17 +39,29 @@
 
     &Close {
       text-align: right;
-      background-color: #F7F7F7;
-      float: right;
-      color: black;
+      position: absolute;
+      right: 8px;
+      top: 3px;
+      font-weight: bold;
+      color: lighten(#3E403F, 20%);
       border-radius: 50%;
-      padding: 5px 10px;
       font-size: 20px;
       user-select: none;
+      transition: 0.3s all;
+      transform: rotate(45deg);
       cursor: pointer;
       &:hover{
-        background-color: darken(#F7F7F7,20%);
+        transition: 0.3s all;
+        animation-name: modalCloseButtonAnimation;
+        animation-iteration-count: 1;
+        animation-duration: 2s;
+        color: darken(#3E403F, 5%);
       }
     }
   }
+}
+
+ @keyframes modalCloseButtonAnimation {
+  0% {transform: rotate(225deg);}
+  50% {transform: rotate(45deg);}
 }

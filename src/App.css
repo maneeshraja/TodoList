@@ -36,6 +36,7 @@ h1 {
   transition: .2s all;
   border-radius: 14px;
 }
+
 .toDoButton:hover {
   background-color: #F7F7F7;
   transition: .2s all;
@@ -45,7 +46,8 @@ h1 {
   }
 
   .toDoItems{
-      margin: 15px 3em;
+    display: inline;
+    padding-left: 10px
   }
 
   .todoItemLabel {
@@ -53,13 +55,15 @@ h1 {
     color: black;
     user-select: none;
     cursor: pointer;
-    margin-left: 18px;
   }
 
   .toDoItemInput {
     user-select: none;
     outline: none;
     margin-right: 15px;
+    margin-top: -11px;
+    position: relative;
+    top: 2px;
   }
 
   .toDoFolder {
@@ -93,20 +97,66 @@ h1 {
     margin-top: 50px;
   }
 
-  .folder {
-    margin: 15px 3.5em;
+  .todoRow{
+    margin: 15px 1.9em;
     cursor: pointer;
     font-size: 18px;
     user-select: none;
+
+  }
+
+  .folder {
+    display: inline;
+    padding-left: 10px
   }
 
   .folderImg {
+    display: inline;
     width: 20px;
     height: 20px;
     margin-right: 15px;
     position: relative;
     top: 4px;
   }
+
+  .editImg {
+    width: 9px;
+    height: 10px;
+    padding-right: 5px;
+    position: relative;
+    left: -16px;
+    transition: 0.1s all;
+  }
+
+  @keyframes editDeleteAnimation {
+    0% {transform: rotate(0deg);}
+    25% {transform: rotate(45deg);}
+    75% {transform: rotate(-45deg);}
+    100% {transform: rotate(0deg);}
+  }
+
+  .editImg:hover,.deleteImg:hover{
+    transition: 0.1s all;
+    animation-name: editDeleteAnimation;
+    animation-duration: 3s;
+  }
+
+  .deleteImg {
+    height: 11px;
+    width: 8px;
+    padding-right: 0px;
+    position: relative;
+    left: -5px;
+    transition: 0.1s all;
+  }
+
+.editModal {
+
+}
+
+.deleteModal {
+
+}
 
 /*
 input,button{

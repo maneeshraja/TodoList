@@ -52,7 +52,7 @@ export default class Modal extends Component {
     return (
       <div onClick={this.handleDocumentClick} onKeyDown={this.state.handleKeyDown} className={`modal ${this.state.isOpen?"open":"close"}`}>
         <div className="modalBody">
-        <div onClick={this.handleClick} className="modalBodyClose"> x </div>
+          <div onClick={this.handleClick} className="modalBodyClose"> + </div>
           <div>
             {this.props.children}
           </div>

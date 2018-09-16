@@ -11,7 +11,7 @@ export default class TodoItem extends Component {
       text: "",
       checked: false
     }
-
+    this.handleChange = this.handleChange.bind(this);
     this.checkbox = React.createRef();
   }
 
@@ -33,6 +33,13 @@ export default class TodoItem extends Component {
     }
   }
 
+  handleChange(e){
+    this.setState({checked: e.currentTarget.checked});
+    if(this.props.callBack) {
+      this.props.callBack(this.props.id, e.currentTarget.checked);
+    }
+  }
+
   render() {
     return (
       <div className="toDoItems">
@@ -41,12 +48,7 @@ export default class TodoItem extends Component {
             className = "toDoItemInput"
             type="checkbox"
             ref={this.checkbox}
-            onChange={(e) => {
-                                this.setState({checked: e.currentTarget.checked});
-                                if(this.props.callBack) {
-                                  this.props.callBack(this.props.id, e.currentTarget.checked);
-                                }
-                              }}
+            onChange={this.handleChange}
             data-id={this.props.id}
           />
           {this.state.text}

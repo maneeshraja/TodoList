@@ -48,49 +48,51 @@ export default class Login extends Component {
 
         <Modal callBack={this.modalCallBack} showModal={this.state.showModal}>
           <div className="registerModal">
-            <h3 style={{textAlign:"center"}}> Register</h3>
+            <h3 className="registerModalHeading"> Register</h3>
             <form onSubmit={(e) => e.preventDefault()}>
             <table className="registrationForm">
-              <tr>
-                <td>
-                  <label> First Name </label>
-                </td>
-                <td>
-                  <input type="text" id="fn" name= "firstName" placeholder="First Name"  /> <br/>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <label> Last Name </label>
-                </td>
-                <td>
-                  <input type="text" id="ln" name= "lastName" placeholder="Last Name"  /> <br/>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <label> Email </label>
-                </td>
-                <td>
-                  <input type="email" id="email" name= "email" placeholder="abc@gmail.com"  /> <br/>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <label> Password </label>
-                </td>
-                <td>
-                  <input type="password" id="pass" name="password" placeholder="P@ssw0rd"  /> <br/>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <label> Re-Enter Password </label>
-                </td>
-                <td>
-                  <input type="password" id="repass" name="rePassword" placeholder="P@ssw0rd"  /> <br/>
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>
+                    <label> First Name </label>
+                  </td>
+                  <td>
+                    <input type="text" id="fn" name= "firstName" placeholder="First Name"  /> <br/>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <label> Last Name </label>
+                  </td>
+                  <td>
+                    <input type="text" id="ln" name= "lastName" placeholder="Last Name"  /> <br/>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <label> Email </label>
+                  </td>
+                  <td>
+                    <input type="email" id="email" name= "email" placeholder="abc@gmail.com"  /> <br/>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <label> Password </label>
+                  </td>
+                  <td>
+                    <input type="password" id="pass" name="password" placeholder="P@ssw0rd"  /> <br/>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <label> Re-Enter Password </label>
+                  </td>
+                  <td>
+                    <input type="password" id="repass" name="rePassword" placeholder="P@ssw0rd"  /> <br/>
+                  </td>
+                </tr>
+              </tbody>
             </table>
             <button className="registerButton" onClick={this.Register}> Register </button>
             </form>

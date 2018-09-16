@@ -1,0 +1,178 @@
+// out: ./todo.css, compress: true
+
+@import './Styles/common.less';
+
+.toDoInput{
+  .commonInput;
+}
+
+.toDoButton{
+  .commonButton;
+}
+
+.toDoItems{
+  display: inline;
+  padding-left: 10px
+}
+
+.todoItemLabel {
+  font-size: 18px;
+  color: black;
+  user-select: none;
+  cursor: pointer;
+}
+
+.toDoItemInput {
+  user-select: none;
+  outline: none;
+  margin-right: 15px;
+  margin-top: -11px;
+  position: relative;
+  top: 2px;
+}
+
+.toDoFolder {
+  margin: 15px auto;
+  width: 80px;
+  user-select: none;
+ }
+
+ .toDoFilter label {
+   margin-left: 25px;
+ }
+
+.toDoPrevious {
+  padding: 0px 20px;
+}
+
+.toDoPreviousPages {
+  padding: 0px 3px;
+
+  &:hover {
+    text-decoration: underline;
+    color: blue;
+    cursor: pointer;
+  }
+
+  &.last {
+    pointer-events: none;
+  }
+}
+
+.pagestyles{
+  margin: auto;
+  margin-top: 50px;
+}
+
+.todoRow{
+  margin: 15px 1.9em;
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
+}
+
+.folder {
+  display: inline;
+  padding-left: 10px
+}
+
+.folderImg {
+  display: inline;
+  width: 20px;
+  height: 20px;
+  margin-right: 15px;
+  position: relative;
+  top: 4px;
+}
+
+.editImg {
+  width: 9px;
+  height: 10px;
+  padding-right: 5px;
+  position: relative;
+  left: -16px;
+  .transition(.1s);
+}
+
+@keyframes editDeleteAnimation {
+  0% {transform: rotate(0deg);}
+  25% {transform: rotate(45deg);}
+  75% {transform: rotate(-45deg);}
+  100% {transform: rotate(0deg);}
+}
+
+.editImg:hover,.deleteImg:hover{
+  .transition(.1s);
+  animation-name: editDeleteAnimation;
+  animation-duration: 3s;
+}
+
+.deleteImg {
+  height: 11px;
+  width: 8px;
+  padding-right: 0px;
+  position: relative;
+  left: -5px;
+  .transition(.1s);
+}
+
+.editModal {
+
+  &Head {
+    .centerText;
+  }
+
+  &Input {
+    .commonInput;
+    .centerElement;
+  }
+
+  &Button {
+    .commonButton;
+    width: 100px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+}
+
+.deleteModal {
+  &Message {
+    .centerText;
+    margin-top: 10px;
+    font-size: 20px;
+  }
+
+  &Buttons {
+    margin-left: 130px;
+    margin-top: 11px;
+    &Yes {
+      .commonButton;
+      width: 50px;
+      .d_inline_block;
+      margin-left: 25px;
+    }
+
+    &No {
+      .commonButton;
+      width: 50px;
+      .d_inline_block;
+    }
+  }
+}
+
+.homeImg {
+  width: 16px;
+}
+
+.checked {
+  text-decoration: line-through;
+  color: lightgray;
+}
+
+.noRecordsToDisplay {
+  margin-left: 4em;
+  margin-top: 20px;
+  font-style: italic;
+  font-size: 15px;
+  color: lightgray;
+}

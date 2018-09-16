@@ -1,5 +1,5 @@
-import {SAVE_TODO_ITEM,UPDATE_TODO_ITEM,DELETE_TODO_ITEM,
-        UPDATE_TODO_FOLDER,DELETE_TODO_FOLDER,SAVE_TODO_FOLDER,RETRIEVE_TODO,INITIAL_STATE} from '../Constants';
+import {SAVE_TODO,EDIT_TODO,DELETE_TODO, api_url,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS,
+        RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE} from '../Constants';
 
 const itemsRetrieved = (resp) => {
   const action = {
@@ -17,8 +17,51 @@ const initialState = (resp) => {
   }
 }
 
+const savedTodo = (resp) => {
+  return {
+    type: SAVE_TODO,
+    data: resp
+  }
+}
+
+const deletedTodo = (resp) => {
+  return {
+    type: DELETE_TODO,
+    data: resp
+  }
+}
+
+const editedTodo = (resp) => {
+  return{
+    type: EDIT_TODO,
+    data: resp
+  }
+}
+
+const updatedTodoItemCheckBox = (resp) => {
+  return {
+    type: UPDATE_TODO_ITEM_CHECKBOX,
+    data: resp
+  }
+}
+
+export const updateInitialState = (initialState) => {
+  return {
+    type: UPDATE_INITIALSTATE,
+    data: initialState
+  }
+}
+
+export const updateItems = (items) => {
+  console.log(items);
+  return {
+    type: UPDATE_ITEMS,
+    data: items
+  }
+}
+
 export const getInitialState = () => {
-  const url = `http://10.0.0.65:18982/initialStats?userId=1`;
+  const url = `${api_url}/initialStats?userId=1`;
   return dispatch => {
     fetch(url, {
       method: 'GET',
@@ -30,7 +73,7 @@ export const getInitialState = () => {
 }
 
 export const retrieveTodo = (folderId) => {
-  const url = `http://10.0.0.65:18982/items?folderId=${folderId}&userId=1`;
+  const url = `${api_url}/items?folderId=${folderId}&userId=1`;
   return dispatch => {
     fetch(url, {
     method: 'GET', // or 'PUT'
@@ -42,3 +85,74 @@ export const retrieveTodo = (folderId) => {
   }
 
 }
+
+export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent) => {
+  const url = `${api_url}/createItem`;
+  return dispatch => {
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "userId": userId,
+        "isFolder": isFolder,
+        "checked": checked,
+        "text": text,
+        "folderId": folderId,
+        "uid": uid,
+        "parent": parent
+      })
+    }).then(res => res.json()).then(response => dispatch(savedTodo(response)));
+  }
+}
+
+  export const updateTodoItemCheckBox = (userId, checked, uid) => {
+    const url = `${api_url}/updateTodoItem`;
+    return dispatch => {
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "userId": userId,
+          "checked": checked,
+          "uid": uid
+        })
+      }).then(res => res.json()).then(response => dispatch(updatedTodoItemCheckBox(response)));
+    }
+  }
+
+  export const deleteTodo = (userId,uid) => {
+    const url = `${api_url}/deleteTodo`;
+    return dispatch => {
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "userId": userId,
+          "uid": uid
+        })
+      }).then(res => res.json()).then(response => dispatch(deletedTodo(response)));
+      }
+  }
+
+  export const editTodo = (userId,text,uid) => {
+    const url = `${api_url}/editTodo`;
+    return dispatch => {
+      fetch(url, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "userId": userId,
+          "text": text,
+          "uid": uid
+        })
+      }).then(res => res.json()).then(response => dispatch(editedTodo(response)));
+    }
+  }

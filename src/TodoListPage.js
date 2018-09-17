@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import TodoItem from './TodoItem.js';
 import Dropdown from './Dropdown';
 import Modal from './Modal';
-//import Banner from './Banner';
+import Banner from './Banner';
+import Loader from './Loader';
 import {retrieveTodo,
         getInitialState,
         saveTodo,
@@ -15,14 +16,10 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import './todo.css';
 
-
-
 const PreviousFolders = (props) => {
 
   const { previous, pagerFunc, currentFolder } = props;
-
   let prev = [...previous];
-
   const home = (<img src={"home.png"} className="homeImg" />);
 
   if(prev.length > 0) {
@@ -63,7 +60,12 @@ class ToDoListPage  extends Component {
       currentTodoText: "",
       dropdownFilterValue: 1,
       showEditModal: false,
-      showDeleteModal: false
+      showDeleteModal: false,
+      showBanner: false,
+      bannerMessage: "",
+      bannerStatus: 0,
+      bannerAfterClose: 3,
+      showLoader: false
     }
 
     this.inputText = React.createRef();
@@ -85,6 +87,11 @@ class ToDoListPage  extends Component {
                           {id: 3, item: "Items only", disabled: false},
                           {id: 4, item: "Unchecked items", disabled: false},
                           {id: 5, item: "Checked items", disabled: false}];
+
+    this.bannerStatus = { Info: 0,
+                          Success: 1,
+                          Warn: 2,
+                          Error: 3 };
   }
 
   componentDidMount() {
@@ -143,32 +150,25 @@ class ToDoListPage  extends Component {
         const folderCount = this.state.folderCount+1;
         folder_count = folderCount;
         this.props.saveTodo(1, true, false, this.inputText.current.value, folderCount, this.state.identity, this.state.currentFolder);
-        this.setState({folderCount, todo: [...this.state.todo,
-                                                {text: this.inputText.current.value,
-                                                 checked: false,
-                                                 isFolder: true,
-                                                 folderId: folderCount,
-                                                 parent: this.state.currentFolder,
-                                                 id: this.state.identity,
-                                                 created_time: "now",
-                                                 updated_time: "now"}]});
 
-       this.props.updateItems({todo: [...this.state.todo,
-                                               {text: this.inputText.current.value,
-                                                checked: false,
-                                                isFolder: true,
-                                                folderId: folderCount,
-                                                parent: this.state.currentFolder,
-                                                id: this.state.identity,
-                                                created_time: "now",
-                                                updated_time: "now"}]});
+        const todo = [...this.state.todo,{text: this.inputText.current.value,
+                                          checked: false,
+                                          isFolder: true,
+                                          folderId: folderCount,
+                                          parent: this.state.currentFolder,
+                                          id: this.state.identity,
+                                          created_time: "now",
+                                          updated_time: "now"}];
+
+        this.setState({folderCount, todo});
+        this.props.updateItems({todo});
 
         // resetting the Folder toggle on UI
         this.folder.current.checked = false;
         this.setState({folderChecked: false});
       } else {
         this.props.saveTodo(1, false, false, this.inputText.current.value, -1, this.state.identity, this.state.currentFolder);
-        this.setState({todo: [...this.state.todo,
+        const todo = [...this.state.todo,
                                    {text: this.inputText.current.value,
                                     checked: false,
                                     isFolder: false,
@@ -176,24 +176,26 @@ class ToDoListPage  extends Component {
                                     parent: this.state.currentFolder,
                                     id: this.state.identity,
                                     created_time: "now",
-                                    updated_time: "now"}]});
-        this.props.updateItems({todo: [...this.state.todo,
-                                   {text: this.inputText.current.value,
-                                    checked: false,
-                                    isFolder: false,
-                                    folderId: -1,
-                                    parent: this.state.currentFolder,
-                                    id: this.state.identity,
-                                    created_time: "now",
-                                    updated_time: "now"}]});
+                                    updated_time: "now"}];
+        this.setState({todo});
+        this.props.updateItems({todo});
       }
 
-      this.setState({identity: this.state.identity+1});
+      this.setState({identity: this.state.identity+1,
+                     showBanner: true,
+                     bannerMessage: (<span><b>Success</b><i>fully</i> added!</span>),
+                     bannerStatus: this.bannerStatus.Success,
+                     bannerAfterClose: 5});
       identity_count++;
 
       this.props.updateInitialState({folder_count, identity_count});
 
       this.inputText.current.value = "";
+    } else {
+      this.setState({showBanner: true,
+                     bannerMessage: "Item field cannot be empty!",
+                     bannerStatus: this.bannerStatus.Warn,
+                     bannerAfterClose: 3});
     }
   }
 
@@ -286,6 +288,9 @@ class ToDoListPage  extends Component {
     const message = "No records to display!";
     return(
       <div className="pagestyles">
+        <Loader showLoader={this.state.showLoader} callBack={(status) => this.setState({showLoader: status})}>
+          <b> Saving <i>Item</i> to <span style={{color:"yellow"}}>database</span></b>
+        </Loader>
         <div>
           <input maxLength="100" onChange={this.handleMaxLength} className="toDoInput" onKeyDown={(e) => {
                                                             if (e.keyCode === 13) {
@@ -296,6 +301,15 @@ class ToDoListPage  extends Component {
             <label> <input type="checkbox" ref={this.folder} onChange={(e) => this.setState({folderChecked: e.currentTarget.checked})} /> Folder </label>
           </div>
           <button className="toDoButton" onClick={this.handleclick}> Add{`${this.state.folderChecked?' Folder':' Item'}`} </button>
+        </div>
+        <div className="bannerContainer">
+          <Banner
+                status={this.state.bannerStatus}
+                closeAfter={this.state.bannerAfterClose}
+                showBanner={this.state.showBanner}
+                callBack={(status) => this.setState({showBanner: status})}>
+            {this.state.bannerMessage}
+          </Banner>
         </div>
         <div className="toDoFilter">
           <label><b> Filter: </b></label>

@@ -42,7 +42,7 @@ export default class TodoItem extends Component {
 
   render() {
     return (
-      <div className="toDoItems">
+      <div className={`${this.props.className?this.props.className:""} toDoItems`}>
         <label className={`todoItemLabel ${this.state.checked?'checked':''}`}>
           <input
             className = "toDoItemInput"
@@ -62,5 +62,6 @@ TodoItem.propTypes = {
   text: PropTypes.string.isRequired,
   checked: PropTypes.bool,
   id: PropTypes.number.isRequired,
-  callBack: PropTypes.func
+  callBack: PropTypes.func,
+  className: PropTypes.string
 }

@@ -43,8 +43,40 @@
   user-select: none;
  }
 
- .toDoFilter label {
-   margin-left: 25px;
+ .toDoFilter {
+display: inline-block;
+     &Label{
+       margin-left: 25px;
+     }
+
+ }
+
+.groupByTodoItems {
+  .dropdownContainerButton {
+    width: 220px;
+  }
+  .dropdownContainerList{
+    width: 248px;
+  }
+}
+.filterTodoFolders {
+  .dropdownContainerButton {
+    width: 180px;
+  }
+  .dropdownContainerList{
+    width: 208px;
+  }
+}
+
+ .toDoSort {
+
+   display: inline-block;
+
+   margin-left: 50px;
+
+   &Label{
+     margin-left: 25px;
+   }
  }
 
 .toDoPrevious {
@@ -72,18 +104,36 @@
 
 .todoRow{
   margin: 15px 1.9em;
-  cursor: pointer;
   font-size: 18px;
   user-select: none;
+
+  &Item {
+    &:hover {
+      .todoRowItemDescription {
+        .d_inline;
+      }
+    }
+
+    &Description {
+      .d_none;
+      cursor: pointer;
+      font-size: 10px;
+      margin-left: 10px;
+    }
+
+  }
+
 }
 
 .folder {
   display: inline;
+  cursor: pointer;
   padding-left: 10px
 }
 
 .folderImg {
   display: inline;
+  cursor: pointer;
   width: 20px;
   height: 20px;
   margin-right: 15px;
@@ -92,6 +142,7 @@
 }
 
 .editImg {
+  cursor: pointer;
   width: 9px;
   height: 10px;
   padding-right: 5px;
@@ -114,6 +165,7 @@
 }
 
 .deleteImg {
+  cursor: pointer;
   height: 11px;
   width: 8px;
   padding-right: 0px;
@@ -175,10 +227,28 @@
   color: lightgray;
 }
 
+.checkedFolder {
+  filter: grayscale(100%);
+}
+
 .noRecordsToDisplay {
   margin-left: 4em;
   margin-top: 20px;
   font-style: italic;
   font-size: 15px;
   color: lightgray;
+}
+
+@media screen and (max-width: 450px) {
+  .toDoSort {
+    margin: 10px 0px;
+  }
+  .filterTodoFolders {
+    .dropdownContainerButton {
+      width: 220px;
+    }
+    .dropdownContainerList{
+      width: 248px;
+    }
+  }
 }

@@ -10,4 +10,8 @@ export const INITIAL_STATE = "INITIAL_STATE";
 export const UPDATE_INITIALSTATE = "UPDATE_INITIALSTATE";
 export const UPDATE_ITEMS = "UPDATE_ITEMS";
 
+export const TOGGLE_SAVING = "TOGGLE_SAVING";
+export const ERROR_SAVING = "ERROR_SAVING";
+export const TOGGLE_ERROR_SAVING = "TOGGLE_ERROR_SAVING";
+
 export const api_url = "http://10.0.0.65:18982";  // 102 = Bhargav, 65 = rpi

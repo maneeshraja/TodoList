@@ -11,7 +11,9 @@ import {retrieveTodo,
         updateInitialState,
         updateItems,
         editTodo,
-        deleteTodo} from './Actions/todo.js';
+        deleteTodo,
+        toggleSaving} from './Actions/todo.js';
+import {mergeSort} from './util.js';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import './todo.css';
@@ -65,7 +67,9 @@ class ToDoListPage  extends Component {
       bannerMessage: "",
       bannerStatus: 0,
       bannerAfterClose: 3,
-      showLoader: false
+      showLoader: false,
+      loaderText: "",
+      dropdownSortValue: 1
     }
 
     this.inputText = React.createRef();
@@ -79,20 +83,34 @@ class ToDoListPage  extends Component {
     this.handleclick = this.handleclick.bind(this);
     this.handlePager = this.handlePager.bind(this);
     this.dropdownFilterChanged = this.dropdownFilterChanged.bind(this);
+    this.dropdownSortChanged = this.dropdownSortChanged.bind(this);
+    this.filterItems = this.filterItems.bind(this);
+    this.orderItems = this.orderItems.bind(this);
     this.editButtonClicked = this.editButtonClicked.bind(this);
     this.deleteButtonClicked = this.deleteButtonClicked.bind(this);
 
-    this.dropdownList = [{id: 1, item: "Show all", disabled: false, active: true},
+    this.dropdownList = [ {id: 1, item: "Show all", disabled: false, active: true},
                           {id: 2, item: "Folders only", disabled: false},
                           {id: 3, item: "Items only", disabled: false},
                           {id: 4, item: "Unchecked items", disabled: false},
-                          {id: 5, item: "Checked items", disabled: false}];
+                          {id: 5, item: "Checked items", disabled: false},
+                          {id: 6, item: "InCompleted Folders", disabled: false},
+                          {id: 7, item: "Completed Folders", disabled: false}];
+
+    this.sortDropdownList = [ {id: 1, item: "None", disabled: false, active: true},
+                              {id: 2, item: "Created Date (Ascending)", disabled: false},
+                              {id: 3, item: "Created Date (Descending)", disabled: false},
+                              {id: 4, item: "Updated Date (Ascending)", disabled: false},
+                              {id: 5, item: "Updated Date (Descending)", disabled: false},
+                              {id: 6, item: "Name (Ascending)", disabled: false},
+                              {id: 7, item: "Name (Descending)", disabled: false},];
+
 
     this.bannerStatus = { Info: 0,
                           Success: 1,
                           Warn: 2,
                           Error: 3 };
-  }
+                        }
 
   componentDidMount() {
     this.inputText.current.focus();
@@ -112,6 +130,14 @@ class ToDoListPage  extends Component {
     if(nextProps.items && !isNaN(nextProps.items.length)) {
       this.setState({todo: nextProps.items});
     }
+
+    if(nextProps.saving !== this.props.saving) {
+      if(nextProps.saving) {
+        this.setState({showLoader: true, loaderText: "Saving new Item/Folder"});
+      } else {
+        this.setState({showLoader: false, loaderText: ""});
+      }
+    }
   }
 
   itemOnClick(n, status) {
@@ -123,7 +149,7 @@ class ToDoListPage  extends Component {
 
     obj = obj[0];
 
-    obj.checked = status;
+    obj.checked = status?1:0;
 
     for(let i=0;i<this.state.todo.length;i++) {
       if(n === this.state.todo[i].id) {
@@ -133,7 +159,7 @@ class ToDoListPage  extends Component {
       }
     }
 
-    this.props.updateTodoItemCheckBox(1,status,n);
+    this.props.updateTodoItemCheckBox(1,status,n,obj.parent);
 
     this.setState({todo: nObj});
   }
@@ -149,6 +175,8 @@ class ToDoListPage  extends Component {
       if (isFolder) {
         const folderCount = this.state.folderCount+1;
         folder_count = folderCount;
+
+        this.props.toggleSaving(true);
         this.props.saveTodo(1, true, false, this.inputText.current.value, folderCount, this.state.identity, this.state.currentFolder);
 
         const todo = [...this.state.todo,{text: this.inputText.current.value,
@@ -167,6 +195,7 @@ class ToDoListPage  extends Component {
         this.folder.current.checked = false;
         this.setState({folderChecked: false});
       } else {
+        this.props.toggleSaving(true);
         this.props.saveTodo(1, false, false, this.inputText.current.value, -1, this.state.identity, this.state.currentFolder);
         const todo = [...this.state.todo,
                                    {text: this.inputText.current.value,
@@ -222,6 +251,10 @@ class ToDoListPage  extends Component {
     this.setState({dropdownFilterValue: selectedId});
   }
 
+  dropdownSortChanged(selectedId) {
+    this.setState({dropdownSortValue: selectedId});
+  }
+
   editButtonClicked() {
     const txt = this.updateTodoText.current.value;
     if(txt) {
@@ -254,6 +287,60 @@ class ToDoListPage  extends Component {
     this.props.updateItems({todo});
   }
 
+  filterItems(list) {
+    return list.filter((value) => {
+                                    if (value.isFolder && this.state.dropdownFilterValue === 2) {
+                                      return true;
+                                    }
+
+                                    if (value.checked && this.state.dropdownFilterValue === 5) {
+                                      return true;
+                                    }
+
+                                    if (!value.checked && !value.isFolder && this.state.dropdownFilterValue === 4) {
+                                      return true;
+                                    }
+
+                                    if (!value.isFolder && this.state.dropdownFilterValue === 3) {
+                                      return true;
+                                    }
+
+                                    if (this.state.dropdownFilterValue === 1) {
+                                      return true;
+                                    }
+
+                                    if (!value.checked && value.isFolder && this.state.dropdownFilterValue === 6) {
+                                      return true;
+                                    }
+
+                                    if (value.checked && value.isFolder && this.state.dropdownFilterValue === 7) {
+                                      return true;
+                                    }
+
+                                  });
+  }
+
+  orderItems(list) {
+
+    const order = this.state.dropdownSortValue;
+
+    if (order === 2) {
+      return mergeSort(list, function(a,b) { return new Date(a.created_time).getTime() < new Date(b.created_time).getTime() });
+    } else if(order === 3) {
+      return mergeSort(list, function(a,b) { return new Date(a.created_time).getTime() > new Date(b.created_time).getTime() });
+    } else if(order === 4) {
+      return mergeSort(list, function(a,b) { return new Date(a.updated_time).getTime() < new Date(b.updated_time).getTime() });
+    } else if(order === 5) {
+      return mergeSort(list, function(a,b) { return new Date(a.updated_time).getTime() > new Date(b.updated_time).getTime() });
+    } else if(order === 6) {
+      return mergeSort(list, function(a,b) { return a.text < b.text });
+    } else if(order === 7) {
+      return mergeSort(list, function(a,b) { return a.text > b.text });
+    } else {
+      return list;
+    }
+  }
+
   render(){
 
     let folderSpecificList = this.state.todo.filter((value) => value.parent === this.state.currentFolder);
@@ -262,34 +349,14 @@ class ToDoListPage  extends Component {
       folderSpecificList = [];
     }
 
-    let filterSpecificList = folderSpecificList.filter((value) => {
-                                                        if (value.isFolder && this.state.dropdownFilterValue === 2) {
-                                                          return true;
-                                                        }
-
-                                                        if (value.checked && this.state.dropdownFilterValue === 5) {
-                                                          return true;
-                                                        }
-
-                                                        if (!value.checked && !value.isFolder && this.state.dropdownFilterValue === 4) {
-                                                          return true;
-                                                        }
-
-                                                        if (!value.isFolder && this.state.dropdownFilterValue === 3) {
-                                                          return true;
-                                                        }
-
-                                                        if (this.state.dropdownFilterValue === 1) {
-                                                          return true;
-                                                        }
-
-                                                      });
+    folderSpecificList = this.orderItems(this.filterItems(folderSpecificList));
 
     const message = "No records to display!";
+
     return(
       <div className="pagestyles">
         <Loader showLoader={this.state.showLoader} callBack={(status) => this.setState({showLoader: status})}>
-          <b> Saving <i>Item</i> to <span style={{color:"yellow"}}>database</span></b>
+          {this.state.loaderText}
         </Loader>
         <div>
           <input maxLength="100" onChange={this.handleMaxLength} className="toDoInput" onKeyDown={(e) => {
@@ -311,35 +378,44 @@ class ToDoListPage  extends Component {
             {this.state.bannerMessage}
           </Banner>
         </div>
-        <div className="toDoFilter">
-          <label><b> Filter: </b></label>
-          <Dropdown isDisabled={this.state.isDisabled} dropdownSelectedItem={this.state.dropdownValue} dropdownList={this.dropdownList} callBack={this.dropdownFilterChanged} />
+        <div>
+          <div className="toDoFilter">
+            <label className="toDoFilterLabel"><b> Filter: </b></label>
+            <Dropdown isDisabled={this.state.isDisabled} className="filterTodoFolders" dropdownSelectedItem={this.state.dropdownValue} dropdownList={this.dropdownList} callBack={this.dropdownFilterChanged} />
+          </div>
+          <div className="toDoSort">
+            <label className="toDoSortLabel"><b> Sort By: </b></label>
+            <Dropdown isDisabled={this.state.isDisabled} className="groupByTodoItems" dropdownSelectedItem={this.state.sortDropdownValue} dropdownList={this.sortDropdownList} callBack={this.dropdownSortChanged} />
+          </div>
         </div>
         <div className="toDoPrevious">
           <PreviousFolders previous={this.state.previousFolders} currentFolder={this.state.currentFolderName} pagerFunc={this.handlePager} />
         </div>
-        <div className={`noRecordsToDisplay ${filterSpecificList.length > 0?'d_none':'d_block'}`}>
+        <div className={`noRecordsToDisplay ${folderSpecificList.length > 0?'d_none':'d_block'}`}>
           {message}
         </div>
-        <div className={`${filterSpecificList.length === 0?'d_none':'d_block'}`}>
-          {filterSpecificList.map((value, index) => value.isFolder?(
+        <div className={`${folderSpecificList.length === 0?'d_none':'d_block'}`}>
+          {folderSpecificList.map((value, index) => value.isFolder?(
                 <div className="todoRow" key={index}>
                   <img src="editIcon.png" className="editImg" onClick={() => this.setState({showEditModal: true, currentTodoUid: value.id, currentTodoText: value.text})} />
                   <img src="deleteIcon.png" className="deleteImg" onClick={() => this.setState({showDeleteModal: true, currentTodoUid: value.id})} />
                   <div className="folder" folderid={value.folderId} foldertext={value.text} onClick={this.handleFolderClick}>
-                    <img src="folder.png" className="folderImg" />
-                    {value.text}
+                    <img src="folder.png" className={`folderImg ${value.checked?'checkedFolder':''}`} />
+                    <span className={`${value.checked?'checked':''}`}> {value.text} </span>
                   </div>
                 </div>
               ):(
                 <div className="todoRow" key={index}>
                   <img src="editIcon.png" className="editImg" onClick={() => this.setState({showEditModal: true, currentTodoUid: value.id, currentTodoText: value.text})} />
                   <img src="deleteIcon.png" className="deleteImg" onClick={() => this.setState({showDeleteModal: true, currentTodoUid: value.id})} />
-                  <TodoItem
-                     text={value.text}
-                     checked={value.checked===1}
-                     id={value.id}
-                     callBack={this.itemOnClick}/>
+                  <span className="todoRowItem">
+                    <TodoItem
+                       text={value.text}
+                       checked={value.checked===1}
+                       id={value.id}
+                       callBack={this.itemOnClick}/>
+                    <span className={`todoRowItemDescription`} onClick={this.handleDescription}> d </span>
+                  </span>
                 </div>
              ))}
         </div>
@@ -373,7 +449,10 @@ class ToDoListPage  extends Component {
 
 function mapStateToProps(state) {
   return { items: state.todoReducer.items,
-           initialState: state.todoReducer.initialState };
+           initialState: state.todoReducer.initialState,
+           saving: state.todoReducer.saving,
+           errorSaving: state.todoReducer.errorSaving,
+         };
 }
 
 function mapDispatchToProps(dispatch) {
@@ -384,7 +463,8 @@ function mapDispatchToProps(dispatch) {
                              updateInitialState,
                              updateItems,
                              editTodo,
-                             deleteTodo}, dispatch);
+                             deleteTodo,
+                             toggleSaving}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps) (ToDoListPage);

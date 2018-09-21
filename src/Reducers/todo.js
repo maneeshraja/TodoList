@@ -1,7 +1,12 @@
-import {SAVE_TODO,EDIT_TODO,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS,
-        DELETE_TODO,RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE} from '../Constants';
+import {SAVE_TODO,EDIT_TODO,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS, TOGGLE_SAVING, ERROR_SAVING,
+        DELETE_TODO,RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE, TOGGLE_ERROR_SAVING} from '../Constants';
 
-const todoReducer = (state={items:[], initialState:{}, saving: false}, action) => {
+const todoReducer = (state={items:[],
+                     initialState:{},
+                     saving: false,
+                     errorSaving: false,
+                     editing: false,
+                     deleting: false}, action) => {
 
   let returnState = {};
 
@@ -18,9 +23,15 @@ const todoReducer = (state={items:[], initialState:{}, saving: false}, action) =
                         return returnState;
     case UPDATE_ITEMS: returnState = {...state, items:action.data};
                         return returnState;
-    case DELETE_TODO: returnState = {...state, saving: false}
+    case DELETE_TODO: returnState = {...state, deleting: false};
                         return returnState;
-    case EDIT_TODO: returnState = {...state, saving: false}
+    case EDIT_TODO: returnState = {...state, editing: false};
+                        return returnState;
+    case TOGGLE_SAVING: returnState = {...state, saving: action.data};
+                        return returnState;
+    case ERROR_SAVING: returnState = {...state, errorSaving: true, saving: false};
+                        return returnState;
+    case TOGGLE_ERROR_SAVING: returnState = {...state, errorSaving: action.data};
                         return returnState;
 
     default: return state;

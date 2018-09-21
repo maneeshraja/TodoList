@@ -1,5 +1,5 @@
 import {SAVE_TODO,EDIT_TODO,DELETE_TODO, api_url,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS,
-        RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE} from '../Constants';
+        RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE, TOGGLE_SAVING, ERROR_SAVING, TOGGLE_ERROR_SAVING} from '../Constants';
 
 const itemsRetrieved = (resp) => {
   const action = {
@@ -53,10 +53,23 @@ export const updateInitialState = (initialState) => {
 }
 
 export const updateItems = (items) => {
-  console.log(items);
   return {
     type: UPDATE_ITEMS,
     data: items
+  }
+}
+
+export const toggleSaving = (status) => {
+  return {
+    type: TOGGLE_SAVING,
+    data: status
+  }
+}
+
+export const toggleErrorSaving = (status) => {
+  return {
+    type: TOGGLE_ERROR_SAVING,
+    data: status
   }
 }
 
@@ -88,6 +101,7 @@ export const retrieveTodo = (folderId) => {
 
 export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent) => {
   const url = `${api_url}/createItem`;
+  const todoItem = {userId, isFolder, checked, text, folderId, uid, parent};
   return dispatch => {
     fetch(url, {
       method: 'POST',
@@ -103,11 +117,13 @@ export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent)
         "uid": uid,
         "parent": parent
       })
-    }).then(res => res.json()).then(response => dispatch(savedTodo(response)));
+    }).then(res => res.json())
+      .then(response => dispatch(savedTodo(todoItem)))
+      .catch(error => dispatch({type:ERROR_SAVING}));
   }
 }
 
-  export const updateTodoItemCheckBox = (userId, checked, uid) => {
+  export const updateTodoItemCheckBox = (userId, checked, uid, parent) => {
     const url = `${api_url}/updateTodoItem`;
     return dispatch => {
       fetch(url, {
@@ -118,7 +134,8 @@ export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent)
         body: JSON.stringify({
           "userId": userId,
           "checked": checked,
-          "uid": uid
+          "uid": uid,
+          "parent": parent
         })
       }).then(res => res.json()).then(response => dispatch(updatedTodoItemCheckBox(response)));
     }

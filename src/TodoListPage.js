@@ -81,7 +81,9 @@ class ToDoListPage  extends Component {
                               {id: 4, item: "Updated Date (Ascending)", disabled: false},
                               {id: 5, item: "Updated Date (Descending)", disabled: false},
                               {id: 6, item: "Name (Ascending)", disabled: false},
-                              {id: 7, item: "Name (Descending)", disabled: false},];
+                              {id: 7, item: "Name (Descending)", disabled: false},
+                              {id: 8, item: "Completed (Top)", disabled: false},
+                              {id: 9, item: "Incompleted (Top)", disabled: false},];
 
     this.bannerStatus = { Info: 0,
                           Success: 1,
@@ -304,6 +306,10 @@ class ToDoListPage  extends Component {
       return mergeSort(list, function(a,b) { return a.text.toUpperCase() < b.text.toUpperCase() });
     } else if(order === 7) {
       return mergeSort(list, function(a,b) { return a.text.toUpperCase() > b.text.toUpperCase() });
+    } else if(order === 8) {
+      return mergeSort(list, function(a,b) { return a.checked > b.checked });
+    } else if(order === 9) {
+      return mergeSort(list, function(a,b) { return a.checked < b.checked });
     } else {
       return list;
     }
@@ -394,7 +400,7 @@ class ToDoListPage  extends Component {
         <Modal showModal={this.state.showDescriptionModal} callBack={(s) => this.setState({showDescriptionModal: s})}>
           <div className="descriptionModal">
             <h3 className="descriptionModalHeading"> {this.state.currentTodoText} </h3>
-            <textarea className="descriptionModalTextArea" placeholder="This is editable text.."> </textarea> 
+            <textarea className="descriptionModalTextArea" placeholder="This is editable text.."> </textarea>
           </div>
         </Modal>
 

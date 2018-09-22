@@ -81,6 +81,8 @@ display: inline-block;
 
 .toDoPrevious {
   padding: 0px 20px;
+  margin-top: 10px;
+  line-height: 25px;
 }
 
 .toDoPreviousPages {
@@ -122,14 +124,33 @@ display: inline-block;
     }
 
   }
+  &Hover{
+    &:hover{
+      .todoRowFolderDescription{
+        .d_inline;
+      }
+    }
+
+  }
+
+  &Folder{
+    display: inline;
+    cursor: pointer;
+    padding-left: 10px;
+    .lineHeight25;
+
+
+
+    &Description{
+      .d_none;
+      cursor: pointer;
+      font-size: 10px;
+      margin-left: 10px;
+    }
+  }
 
 }
 
-.folder {
-  display: inline;
-  cursor: pointer;
-  padding-left: 10px
-}
 
 .folderImg {
   display: inline;
@@ -218,6 +239,29 @@ display: inline-block;
   }
 }
 
+.descriptionModal {
+  &Heading{
+    .centerText;
+    margin: 0px;
+    margin-bottom: 10px
+  }
+
+  &TextArea {
+    width: 90%;
+    height: 100px;
+    line-height: 17px;
+    margin-left: 15px;
+    border-radius: 3px;
+    border: 0.8px solid lightgray;
+    outline: none;
+    display: block;
+    margin: auto;
+  ::placeholder{
+
+  }
+  }
+}
+
 .homeImg {
   width: 16px;
 }
@@ -250,5 +294,9 @@ display: inline-block;
     .dropdownContainerList{
       width: 248px;
     }
+  }
+
+  .todoRowFolderDescription, .todoRowItemDescription {
+    .d_inline;
   }
 }

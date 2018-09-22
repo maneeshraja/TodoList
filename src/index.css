@@ -1,9 +1,3 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-}
-
 .LoginBox{
   margin:150px 100px;
   border: 2px solid darkgray;
@@ -14,7 +8,7 @@ body {
 }
 
 
-input {
+.loginPageInput {
   padding: 4px 10px;
   border-top: none;
   border-bottom:2px solid darkgray;;
@@ -41,6 +35,7 @@ input {
   color: #3E403F;
   transition: .2s all;
   border-radius: 14px;
+  user-select: none;
 }
 .registerButton{
   margin-top: 25px;
@@ -60,7 +55,7 @@ input {
     margin: 0px;
     margin-bottom: 20px;
 }
-td {
+.loginPageTable {
   text-align: left;
   padding-left: 15px;
 }
@@ -74,4 +69,22 @@ td {
 
 .registerModalHeading{
   text-align: center;
+}
+
+@media screen and (max-width: 650px) {
+  .loginPageInput {
+    width: 80%;
+    display: block;
+    margin: auto;
+  }
+
+  .LoginBox {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.loginAnchorTag{
+  text-decoration: none;
 }

@@ -39,10 +39,10 @@ export default class Login extends Component {
       <div className="LoginBox">
         <h2 className="loginHeading"> Login </h2>
         <label> Email: </label>
-        <input type="text" placeholder="abc@gmail.com" /> <br/> <br/><br/>
+        <input className="loginPageInput" type="text" placeholder="abc@gmail.com" /> <br/> <br/><br/>
         <label> Password: </label>
-        <input type="password" placeholder="password" />
-        <button className="loginButton"> Login </button>
+        <input className="loginPageInput" type="password" placeholder="password" />
+        <a className="loginAnchorTag" href="/todo"><button className="loginButton"> Login </button> </a>
         <a href="#" className={`smallLinks registerLink`} onClick={() => this.setState({showModal: true})}>Register</a>
         <a href="#" className="smallLinks"> Forgot Password </a>
 
@@ -53,43 +53,43 @@ export default class Login extends Component {
             <table className="registrationForm">
               <tbody>
                 <tr>
-                  <td>
+                  <td className ="loginPageTable">
                     <label> First Name </label>
                   </td>
-                  <td>
-                    <input type="text" id="fn" name= "firstName" placeholder="First Name"  /> <br/>
+                  <td className ="loginPageTable">
+                    <input className="loginPageInput" type="text" id="fn" name= "firstName" placeholder="First Name"  /> <br/>
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className ="loginPageTable">
                     <label> Last Name </label>
                   </td>
-                  <td>
-                    <input type="text" id="ln" name= "lastName" placeholder="Last Name"  /> <br/>
+                  <td className ="loginPageTable">
+                    <input className="loginPageInput" type="text" id="ln" name= "lastName" placeholder="Last Name"  /> <br/>
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className ="loginPageTable">
                     <label> Email </label>
                   </td>
-                  <td>
-                    <input type="email" id="email" name= "email" placeholder="abc@gmail.com"  /> <br/>
+                  <td className ="loginPageTable">
+                    <input className="loginPageInput" type="email" id="email" name= "email" placeholder="abc@gmail.com"  /> <br/>
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className ="loginPageTable">
                     <label> Password </label>
                   </td>
-                  <td>
-                    <input type="password" id="pass" name="password" placeholder="P@ssw0rd"  /> <br/>
+                  <td className ="loginPageTable">
+                    <input className="loginPageInput" type="password" id="pass" name="password" placeholder="P@ssw0rd"  /> <br/>
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td className ="loginPageTable">
                     <label> Re-Enter Password </label>
                   </td>
-                  <td>
-                    <input type="password" id="repass" name="rePassword" placeholder="P@ssw0rd"  /> <br/>
+                  <td className ="loginPageTable">
+                    <input className="loginPageInput" type="password" id="repass" name="rePassword" placeholder="P@ssw0rd"  /> <br/>
                   </td>
                 </tr>
               </tbody>

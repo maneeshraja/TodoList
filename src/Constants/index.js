@@ -14,4 +14,6 @@ export const TOGGLE_SAVING = "TOGGLE_SAVING";
 export const ERROR_SAVING = "ERROR_SAVING";
 export const TOGGLE_ERROR_SAVING = "TOGGLE_ERROR_SAVING";
 
+export const APPLICATION_ERROR = "APPLICATION_ERROR";
+
 export const api_url = "http://10.0.0.65:18982";  // 102 = Bhargav, 65 = rpi

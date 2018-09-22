@@ -1,11 +1,3 @@
-* {
-  font-family: Arial;
-}
-
-h1 {
-  text-align: center;
-}
-
 .toDoInput{
   border-top: none;
   border-bottom:2px solid black;;
@@ -106,7 +98,7 @@ h1 {
 
   .folder {
     display: inline;
-    padding-left: 10px
+    padding-left: 10px;
   }
 
   .folderImg {

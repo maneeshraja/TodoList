@@ -43,7 +43,7 @@ export default class TodoItem extends Component {
   render() {
     return (
       <div className={`${this.props.className?this.props.className:""} toDoItems`}>
-        <label className={`todoItemLabel ${this.state.checked?'checked':''}`}>
+        <label className={`todoItemLabel lineHeight25 ${this.state.checked?'checked':''}`}>
           <input
             className = "toDoItemInput"
             type="checkbox"

@@ -1,4 +1,4 @@
-import {SAVE_TODO,EDIT_TODO,DELETE_TODO, api_url,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS,
+import {SAVE_TODO,EDIT_TODO,DELETE_TODO, api_url,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS, APPLICATION_ERROR,
         RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE, TOGGLE_SAVING, ERROR_SAVING, TOGGLE_ERROR_SAVING} from '../Constants';
 
 const itemsRetrieved = (resp) => {
@@ -81,7 +81,9 @@ export const getInitialState = () => {
       headers: {
         'Content-type': 'application/json'
       }
-    }).then(response => response.json()).then(response => dispatch(initialState(response)))
+    }).then(response => response.json())
+      .then(response => dispatch(initialState(response)))
+      .catch(dispatch({type: APPLICATION_ERROR}))
   }
 }
 
@@ -101,24 +103,24 @@ export const retrieveTodo = (folderId) => {
 
 export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent) => {
   const url = `${api_url}/createItem`;
-  const todoItem = {userId, isFolder, checked, text, folderId, uid, parent};
+  const body = JSON.stringify({
+    "userId": userId,
+    "isFolder": isFolder,
+    "checked": checked,
+    "text": text,
+    "folderId": folderId,
+    "uid": uid,
+    "parent": parent
+  });
   return dispatch => {
     fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        "userId": userId,
-        "isFolder": isFolder,
-        "checked": checked,
-        "text": text,
-        "folderId": folderId,
-        "uid": uid,
-        "parent": parent
-      })
+      body
     }).then(res => res.json())
-      .then(response => dispatch(savedTodo(todoItem)))
+      .then(response => dispatch(savedTodo(body)))
       .catch(error => dispatch({type:ERROR_SAVING}));
   }
 }
@@ -141,7 +143,7 @@ export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent)
     }
   }
 
-  export const deleteTodo = (userId,uid) => {
+  export const deleteTodo = (userId,uid,parent) => {
     const url = `${api_url}/deleteTodo`;
     return dispatch => {
       fetch(url, {
@@ -151,7 +153,8 @@ export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent)
         },
         body: JSON.stringify({
           "userId": userId,
-          "uid": uid
+          "uid": uid,
+          "parent": parent
         })
       }).then(res => res.json()).then(response => dispatch(deletedTodo(response)));
       }

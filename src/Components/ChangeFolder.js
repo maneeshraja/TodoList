@@ -102,9 +102,12 @@ class ChangeFolder extends Component {
           <Banner
             showBanner={this.state.showBanner}
             status={1}
-            closeAfter={2}
+            closeAfter={1}
             callBack={(s) => {
                                 this.setState({showBanner: s, showFolderChangeModal: false});
+                                if(this.props.callBack) {
+                                  this.props.callBack(s);
+                                }
                                 this.props.toggleFolderChangedSuccessfull(false);
                              }}>
             Successfully <b>moved</b>!

@@ -1,5 +1,8 @@
-import {SAVE_TODO,EDIT_TODO,DELETE_TODO, api_url,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS, APPLICATION_ERROR,
-        RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE, TOGGLE_SAVING, ERROR_SAVING, TOGGLE_ERROR_SAVING} from '../Constants';
+import {SAVE_TODO,EDIT_TODO,DELETE_TODO, api_url,UPDATE_TODO_ITEM_CHECKBOX,
+        UPDATE_ITEMS, APPLICATION_ERROR,RETRIEVE_TODO,INITIAL_STATE,
+        UPDATE_INITIALSTATE, TOGGLE_SAVING, ERROR_SAVING, TOGGLE_ERROR_SAVING,
+        CHANGE_FOLDER,REMOVE_FROM_ITEMS, CHANGE_FOLDER_RETREIVE, FOLDER_CHANGE_ERROR,
+        TOGGLE_CHANGE_FOLDER_SUCCESSFULL} from '../Constants';
 
 const itemsRetrieved = (resp) => {
   const action = {
@@ -73,6 +76,51 @@ export const toggleErrorSaving = (status) => {
   }
 }
 
+export const changeFolderReceived = (status) => {
+  return {
+    type: CHANGE_FOLDER_RETREIVE,
+    data: status
+  }
+}
+
+export const changedFolder = (status) => {
+  return {
+    type: CHANGE_FOLDER,
+    data: status
+  }
+}
+
+export const removeTodoWhenChanged = (uid) => {
+  return {
+    type: REMOVE_FROM_ITEMS,
+    data: uid
+  }
+}
+
+export const toggleFolderChangedSuccessfull = (status) => {
+  return {
+    type: TOGGLE_CHANGE_FOLDER_SUCCESSFULL,
+    data: status
+  }
+}
+
+export const changeFolder = (userId, uid, folderId) => {
+  const url = `${api_url}/folderChanged`;
+  return dispatch => {
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        "userId":userId,
+        "uid": uid,
+        "folderId": folderId
+      })
+    }).then(response => response.json()).then(response => dispatch(changedFolder(response))).catch(dispatch({type: FOLDER_CHANGE_ERROR}))
+  }
+}
+
 export const getInitialState = () => {
   const url = `${api_url}/initialStats?userId=1`;
   return dispatch => {
@@ -98,7 +146,19 @@ export const retrieveTodo = (folderId) => {
   }).then(res => res.json()).then(response => dispatch(itemsRetrieved(response)));
 
   }
+}
 
+export const changeFolderRetrieve = (folderId) => {
+  const url = `${api_url}/items?folderId=${folderId}&userId=1`;
+  return dispatch => {
+    fetch(url, {
+    method: 'GET', // or 'PUT'
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  }).then(res => res.json()).then(response => dispatch(changeFolderReceived(response)));
+
+  }
 }
 
 export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent) => {

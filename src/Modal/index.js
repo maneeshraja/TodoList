@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import './styles.css';
 
 export default class Modal extends Component {
@@ -49,8 +50,8 @@ export default class Modal extends Component {
 
   render(){
     return (
-      <div onClick={this.handleDocumentClick} onKeyDown={this.state.handleKeyDown} className={`modal ${this.state.isOpen?"open":"close"}`}>
-        <div className="modalBody">
+      <div onClick={this.handleDocumentClick} onKeyDown={this.state.handleKeyDown} className={`modal ${this.props.className?this.props.className:""} ${this.state.isOpen?"open":"close"}`}>
+        <div className={`modalBody`}>
           <div onClick={this.handleClick} className="modalBodyClose"> + </div>
           <div>
             {this.props.children}
@@ -60,4 +61,10 @@ export default class Modal extends Component {
     )
   }
 
+}
+
+Modal.propTypes = {
+  showModal: PropTypes.bool,
+  callBack: PropTypes.func,
+  className: PropTypes.string
 }

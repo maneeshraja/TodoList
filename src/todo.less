@@ -11,6 +11,13 @@
   margin-bottom: 0px;
 }
 
+.toDoButtonChange {
+  .toDoButton;
+    position: fixed;
+    left: 40%;
+    bottom: 20px;
+}
+
 .bannerContainer {
   height: 40px;
   margin-top: 5px;
@@ -109,9 +116,13 @@ display: inline-block;
   font-size: 18px;
   user-select: none;
 
+  &Change {
+    margin: 15px 1em;
+  }
+
   &Item {
     &:hover {
-      .todoRowItemDescription {
+      .todoRowItemDescription, .todoRowFolderChange{
         .d_inline;
       }
     }
@@ -126,7 +137,7 @@ display: inline-block;
   }
   &Hover{
     &:hover{
-      .todoRowFolderDescription{
+      .todoRowFolderDescription, .todoRowFolderChange{
         .d_inline;
       }
     }
@@ -141,12 +152,13 @@ display: inline-block;
 
 
 
-    &Description{
+    &Description, &Change {
       .d_none;
       cursor: pointer;
       font-size: 10px;
       margin-left: 10px;
     }
+
   }
 
 }
@@ -283,7 +295,7 @@ display: inline-block;
   color: lightgray;
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 640px) {
   .toDoSort {
     margin: 10px 0px;
   }
@@ -298,5 +310,54 @@ display: inline-block;
 
   .todoRowFolderDescription, .todoRowItemDescription {
     .d_inline;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .todoRowFolderChange {
+    .d_inline;
+  }
+
+}
+
+.folderChangeModal{
+
+    .modalBody{
+      height: 375px;
+    }
+
+    &Icons {
+      display: inline-block;
+      margin-top: 50px;
+      margin-left: 10px;
+    }
+
+    &FolderContainer {
+      height: 200px;
+      overflow-y: scroll;
+      margin-top: 10px;
+    }
+
+    &Banner {
+      margin-top: 12px;
+    }
+}
+
+.sideBar {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(0,0,0,.5);
+
+  &Main {
+    position: absolute;
+    right: 0%;
+    height: 100vh;
+    width: 40%;
+    transition: .5s;
+    top: 0px;
+    background-color: #ececec;
   }
 }

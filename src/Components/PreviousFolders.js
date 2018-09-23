@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import '../todo.css';
 
 export const PreviousFolders = (props) => {
 
-  const { previous, pagerFunc, currentFolder } = props;
+  const { previous, pagerFunc, currentFolder, className } = props;
   let prev = [...previous];
   const home = (<img src={"home.png"} className="homeImg" />);
 
@@ -19,11 +20,17 @@ export const PreviousFolders = (props) => {
       prev.map((value, index) =>
       <span key={index}> {"/"}
         <span
-            className={`toDoPreviousPages ${(prev.length-1 === index)?'last':''}`}
+            className={`toDoPreviousPages ${className?className:""} ${(prev.length-1 === index)?'last':''}`}
             onClick={() => (prev.length-1 === index)?null:pagerFunc(index, value.id, value.name)}>
               {value.name}
         </span>
       </span>)
   )
+}
 
+PreviousFolders.propTypes = {
+  previous: PropTypes.array,
+  pagerFunc: PropTypes.func,
+  currentFolder: PropTypes.string,
+  className: PropTypes.string
 }

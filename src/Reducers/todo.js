@@ -1,5 +1,8 @@
-import {SAVE_TODO,EDIT_TODO,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS, TOGGLE_SAVING, ERROR_SAVING,
-        DELETE_TODO,RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE, TOGGLE_ERROR_SAVING, APPLICATION_ERROR} from '../Constants';
+import {SAVE_TODO,EDIT_TODO,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS,
+        TOGGLE_SAVING, ERROR_SAVING, CHANGE_FOLDER_RETREIVE,
+        DELETE_TODO,RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE,
+        TOGGLE_ERROR_SAVING, APPLICATION_ERROR, CHANGE_FOLDER,
+        REMOVE_FROM_ITEMS, FOLDER_CHANGE_ERROR, TOGGLE_CHANGE_FOLDER_SUCCESSFULL} from '../Constants';
 
 const todoReducer = (state={items:[],
                      initialState:{},
@@ -7,12 +10,16 @@ const todoReducer = (state={items:[],
                      errorSaving: false,
                      editing: false,
                      deleting: false,
-                     appError: false}, action) => {
+                     appError: false,
+                     folderChangeSuccesful: false,
+                     folderChangeError: false}, action) => {
 
   let returnState = {};
 
   switch(action.type) {
-    case RETRIEVE_TODO: returnState = {...state, items:action.data.items};
+    case RETRIEVE_TODO: returnState = {...state, items: action.data.items};
+                        return returnState;
+    case CHANGE_FOLDER_RETREIVE: returnState = {...state, changeFolderItems: action.data.items};
                         return returnState;
     case INITIAL_STATE: returnState = {...state, initialState:action.data, appError: false};
                         return returnState;
@@ -46,7 +53,14 @@ const todoReducer = (state={items:[],
                         return returnState;
     case APPLICATION_ERROR: returnState = {...state, appError: true};
                         return returnState;
-
+    case CHANGE_FOLDER: returnState = {...state, folderChangeSuccesful: true };
+                        return returnState;
+    case FOLDER_CHANGE_ERROR:returnState = {...state, folderChangeError: true };
+                        return returnState;
+    case REMOVE_FROM_ITEMS: returnState = {...state, items: state.items.filter((val) => val.id !== action.data)};
+                        return returnState;
+    case TOGGLE_CHANGE_FOLDER_SUCCESSFULL: returnState = {...state, folderChangeSuccesful: action.data};
+                        return returnState;
     default: return state;
   }
 }

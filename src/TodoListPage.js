@@ -17,6 +17,8 @@ import { mergeSort } from './util.js';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { PreviousFolders } from './Components/PreviousFolders.js';
+import ChangeFolder from './Components/ChangeFolder.js';
+import SideBar from './Components/SideBar.js';
 import './todo.css';
 
 class ToDoListPage  extends Component {
@@ -39,6 +41,7 @@ class ToDoListPage  extends Component {
       showEditModal: false,
       showDeleteModal: false,
       showDescriptionModal: false,
+      showFolderChangeModal: false,
       showBanner: false,
       bannerMessage: "",
       bannerStatus: 0,
@@ -257,7 +260,7 @@ class ToDoListPage  extends Component {
                                       return true;
                                     }
 
-                                    if (value.checked && this.state.dropdownFilterValue === 5) {
+                                    if (value.checked && !value.isFolder && this.state.dropdownFilterValue === 5) {
                                       return true;
                                     }
 
@@ -379,6 +382,7 @@ class ToDoListPage  extends Component {
                       <span className={`${value.checked?'checked':''}`}> {value.text} </span>
                     </div>
                     <span className={`todoRowFolderDescription`} onClick={() => this.setState({showDescriptionModal: true,currentTodoText: value.text})}> d </span>
+                    <span className={`todoRowFolderChange`} onClick={() => this.setState({showFolderChangeModal: true, currentTodoUid: value.id})}> c </span>
                   </span>
                 </div>
               ):(
@@ -392,6 +396,7 @@ class ToDoListPage  extends Component {
                        id={value.id}
                        callBack={this.itemOnClick}/>
                     <span className={`todoRowItemDescription`} onClick={() => this.setState({showDescriptionModal: true,currentTodoText: value.text})}> d </span>
+                    <span className={`todoRowFolderChange`} onClick={() => this.setState({showFolderChangeModal: true, currentTodoUid: value.id })}> c </span>
                   </span>
                 </div>
              ))}
@@ -426,6 +431,7 @@ class ToDoListPage  extends Component {
             </div>
           </div>
         </Modal>
+        <ChangeFolder showFolderChangeModal={this.state.showFolderChangeModal} uid={this.state.currentTodoUid} callBack={(s) => this.setState({showFolderChangeModal: s})} />
       </div>
     );
   }

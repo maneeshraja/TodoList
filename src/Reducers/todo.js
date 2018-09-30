@@ -2,7 +2,9 @@ import {SAVE_TODO,EDIT_TODO,UPDATE_TODO_ITEM_CHECKBOX, UPDATE_ITEMS,
         TOGGLE_SAVING, ERROR_SAVING, CHANGE_FOLDER_RETREIVE,
         DELETE_TODO,RETRIEVE_TODO,INITIAL_STATE, UPDATE_INITIALSTATE,
         TOGGLE_ERROR_SAVING, APPLICATION_ERROR, CHANGE_FOLDER,
-        REMOVE_FROM_ITEMS, FOLDER_CHANGE_ERROR, TOGGLE_CHANGE_FOLDER_SUCCESSFULL} from '../Constants';
+        REMOVE_FROM_ITEMS, FOLDER_CHANGE_ERROR, TOGGLE_CHANGE_FOLDER_SUCCESSFULL,
+        MOVE_MULTIPLE, DELETE_MULTIPLE, TOGGLE_SUCCESS, UPDATE_DESC, UPDATE_PRIORITY
+        } from '../Constants';
 
 const todoReducer = (state={items:[],
                      initialState:{},
@@ -12,7 +14,8 @@ const todoReducer = (state={items:[],
                      deleting: false,
                      appError: false,
                      folderChangeSuccesful: false,
-                     folderChangeError: false}, action) => {
+                     folderChangeError: false,
+                     success: false}, action) => {
 
   let returnState = {};
 
@@ -57,9 +60,19 @@ const todoReducer = (state={items:[],
                         return returnState;
     case FOLDER_CHANGE_ERROR:returnState = {...state, folderChangeError: true };
                         return returnState;
-    case REMOVE_FROM_ITEMS: returnState = {...state, items: state.items.filter((val) => val.id !== action.data)};
+    case REMOVE_FROM_ITEMS: returnState = {...state, items: state.items.filter((val) => !action.data.includes(val.id))};
                         return returnState;
     case TOGGLE_CHANGE_FOLDER_SUCCESSFULL: returnState = {...state, folderChangeSuccesful: action.data};
+                        return returnState;
+    case MOVE_MULTIPLE: returnState = {...state, success: true};
+                        return returnState;
+    case DELETE_MULTIPLE: returnState = {...state, appError: false};
+                        return returnState;
+    case TOGGLE_SUCCESS: returnState = {...state, success: action.data};
+                        return returnState;
+    case UPDATE_DESC: return returnState = {...state, }
+                        return returnState;
+    case UPDATE_PRIORITY: return returnState = {...state, }
                         return returnState;
     default: return state;
   }

@@ -253,29 +253,6 @@ display: inline-block;
   }
 }
 
-.descriptionModal {
-  &Heading{
-    .centerText;
-    margin: 0px;
-    margin-bottom: 10px
-  }
-
-  &TextArea {
-    width: 90%;
-    height: 100px;
-    line-height: 17px;
-    margin-left: 15px;
-    border-radius: 3px;
-    border: 0.8px solid lightgray;
-    outline: none;
-    display: block;
-    margin: auto;
-  ::placeholder{
-
-  }
-  }
-}
-
 .homeImg {
   width: 16px;
 }
@@ -345,33 +322,13 @@ display: inline-block;
     }
 }
 
-.sideBar {
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  left: 0px;
-  top: 0px;
-  background-color: rgba(0,0,0,.5);
-
-  &Main {
-    position: absolute;
-    right: 0%;
-    height: 100vh;
-    width: 40%;
-    transition: .5s;
-    top: 0px;
-    background-color: #ececec;
-  }
-}
-
-
 .buttonGroup {
   margin: auto;
   display: block;
   margin-left: 14px;
   margin-bottom: 20px;
 
-  &Delete, &Move, &Share{
+  &Delete, &Move, &Share, &SelectAll, &DeSelectAll{
     margin-left: 10px;
     margin-right: 20px;
     display: inline-block;

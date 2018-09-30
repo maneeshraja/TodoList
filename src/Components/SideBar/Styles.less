@@ -1,0 +1,217 @@
+// out: ./styles.css, compress: true
+
+@import '../../Styles/common.less';
+
+
+.sideBar {
+  user-select: none;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  left: 0px;
+  top: 100%;
+  background-color: rgba(0,0,0,.5);
+  transition: all 0.001s;
+
+  &.show {
+    top: 0px;
+    transition: all 0.001s;
+  }
+
+  &Main {
+    transition: all .5s;
+    position: absolute;
+    right: -40%;
+    height: 100vh;
+    width: 40%;
+    top: 0px;
+    background-color: #ececec;
+
+    &.show {
+      right: 0%;
+      transition: all 0.5s;
+    }
+
+    &.hide {
+      right: -40%;
+      transition: all 0.5s;
+    }
+  }
+}
+
+.descriptionSideBar{
+    margin-top: 25px;
+    &Heading{
+      .centerText;
+      margin: 0px;
+
+      &Type {
+        display:inline-block;
+      }
+
+      &Text {
+        display: inline-block;
+        font-size: 30px;
+      }
+    }
+
+    &TextArea {
+
+      &Label {
+        padding-left: 10px;
+        margin-left: 20px;
+        display: inline-block;
+        margin-bottom: 10px;
+      }
+      &Text {
+        display: inline-block;
+        padding: 5px;
+        margin-left: 10%;
+        margin-top: 10px;
+        margin-bottom: 25px;
+        width: 80%;
+        height: 100px;
+        line-height: 17px;
+        border-radius: 3px;
+        border: 0.8px solid lightgray;
+        outline: none;
+        display: block;
+        margin: auto;
+      }
+    ::placeholder{
+
+      }
+    }
+
+    &Priority {
+      &Label {
+        padding-left: 10px;
+        margin-left: 20px;
+        display: inline-block;
+      }
+      &Btns {
+        display: inline-block;
+        margin: 15px 0px;
+      }
+    }
+
+    &Status, &CreationTime, &UpdatedTime {
+
+      &Label {
+        padding-left: 10px;
+        margin-left: 20px;
+        display: inline-block;
+      }
+
+      &Text {
+        display: inline-block;
+        padding-left: 10px;
+        margin-left: 20px;
+      }
+    }
+    &Note {
+      color: darkgray;
+      position: fixed;
+      bottom: 2%;
+      font-size: 12px;
+      margin-left: 12%;
+    }
+}
+
+@media screen and (max-width: 650px) {
+  .sideBar {
+    &Main {
+      right: -70%;
+      width: 70%;
+
+      &.show {
+        right: 0%;
+      }
+
+      &.hide {
+        right: -70%;
+      }
+    }
+  }
+  .descriptionSideBar{
+
+    &Heading{
+
+      &Text {
+        font-size: 20px;
+        margin-left: 0px;
+        margin-bottom: 3px;
+      }
+
+      &Type {
+        margin-top: 2px;
+      }
+    }
+    &TextArea {
+      &Label {
+        margin-left: 3px;
+      }
+    }
+
+    &Status {
+
+      &Label {
+        margin-left: 3px;
+      }
+
+      &Text {
+        margin-left: 10px;
+      }
+    }
+    &CreationTime, &UpdatedTime {
+      &Label {
+        display: block;
+        margin-left: 3px;
+        margin-bottom: 5px;
+      }
+
+      &Text {
+        display: block;
+        margin-left: 5px;
+        font-size: 12px;
+      }
+
+    }
+
+    &Priority {
+      &Label {
+        display: block;
+        margin-top: 15px;
+        margin-left: 3px;
+        margin-bottom: 0px;
+      }
+      &Btns {
+        display: block;
+        margin-top: -10px;
+        margin-left: 10px;
+        font-size: 12px;
+      }
+    }
+
+  }
+  &Note {
+    margin-left: 10%;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .sideBar {
+    &Main {
+      right: -496px;
+      width: 496px;
+
+      &.show {
+        right: 0px;
+      }
+
+      &.hide {
+        right: -496px;
+      }
+    }
+  }
+}

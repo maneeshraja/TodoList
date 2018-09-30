@@ -2,7 +2,8 @@ import {SAVE_TODO,EDIT_TODO,DELETE_TODO, api_url,UPDATE_TODO_ITEM_CHECKBOX,
         UPDATE_ITEMS, APPLICATION_ERROR,RETRIEVE_TODO,INITIAL_STATE,
         UPDATE_INITIALSTATE, TOGGLE_SAVING, ERROR_SAVING, TOGGLE_ERROR_SAVING,
         CHANGE_FOLDER,REMOVE_FROM_ITEMS, CHANGE_FOLDER_RETREIVE, FOLDER_CHANGE_ERROR,
-        TOGGLE_CHANGE_FOLDER_SUCCESSFULL} from '../Constants';
+        TOGGLE_CHANGE_FOLDER_SUCCESSFULL, MOVE_MULTIPLE, DELETE_MULTIPLE, TOGGLE_SUCCESS,
+        UPDATE_DESC, UPDATE_PRIORITY} from '../Constants';
 
 const itemsRetrieved = (resp) => {
   const action = {
@@ -104,6 +105,41 @@ export const toggleFolderChangedSuccessfull = (status) => {
   }
 }
 
+export const moveMultipleHandle = (status) => {
+  return {
+    type: MOVE_MULTIPLE,
+    data: status
+  }
+}
+
+export const deleteMultipleHandle = (status) => {
+  return {
+    type: DELETE_MULTIPLE,
+    data: status
+  }
+}
+
+export const toggleSuccess = (status) => {
+  return {
+    type: TOGGLE_SUCCESS,
+    data: status
+  }
+}
+
+export const updatedDesc = () => {
+  return {
+    type: UPDATE_DESC,
+    //data:
+  }
+}
+
+export const updatedPriority = () => {
+  return {
+    type: UPDATE_PRIORITY,
+    //data:
+  }
+}
+
 export const changeFolder = (userId, uid, folderId) => {
   const url = `${api_url}/folderChanged`;
   return dispatch => {
@@ -185,54 +221,122 @@ export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent)
   }
 }
 
-  export const updateTodoItemCheckBox = (userId, checked, uid, parent) => {
-    const url = `${api_url}/updateTodoItem`;
-    return dispatch => {
-      fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "userId": userId,
-          "checked": checked,
-          "uid": uid,
-          "parent": parent
-        })
-      }).then(res => res.json()).then(response => dispatch(updatedTodoItemCheckBox(response)));
-    }
+export const updateTodoItemCheckBox = (userId, checked, uid, parent) => {
+  const url = `${api_url}/updateTodoItem`;
+  return dispatch => {
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "userId": userId,
+        "checked": checked,
+        "uid": uid,
+        "parent": parent
+      })
+    }).then(res => res.json()).then(response => dispatch(updatedTodoItemCheckBox(response)));
   }
+}
 
-  export const deleteTodo = (userId,uid,parent) => {
-    const url = `${api_url}/deleteTodo`;
-    return dispatch => {
-      fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "userId": userId,
-          "uid": uid,
-          "parent": parent
-        })
-      }).then(res => res.json()).then(response => dispatch(deletedTodo(response)));
-      }
-  }
-
-  export const editTodo = (userId,text,uid) => {
-    const url = `${api_url}/editTodo`;
-    return dispatch => {
-      fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "userId": userId,
-          "text": text,
-          "uid": uid
-        })
-      }).then(res => res.json()).then(response => dispatch(editedTodo(response)));
+export const deleteTodo = (userId,uid,parent) => {
+  const url = `${api_url}/deleteTodo`;
+  return dispatch => {
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "userId": userId,
+        "uid": uid,
+        "parent": parent
+      })
+    }).then(res => res.json()).then(response => dispatch(deletedTodo(response)));
     }
+}
+
+export const editTodo = (userId,text,uid) => {
+  const url = `${api_url}/editTodo`;
+  return dispatch => {
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "userId": userId,
+        "text": text,
+        "uid": uid
+      })
+    }).then(res => res.json()).then(response => dispatch(editedTodo(response)));
   }
+}
+
+export const deleteMultiple = (userId, uids, parent) => {
+  const url = `${api_url}/deleteTodoGroup`;
+  return dispatch => {
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "userId": userId,
+        "uid": uids,
+        "parent": parent
+      })
+    }).then(resp => resp.json()).then(response => dispatch(deleteMultipleHandle(response)));
+  }
+}
+
+export const moveMultiple = (userId, uids, folderId) => {
+  const url = `${api_url}/folderChangedGroup`;
+  return dispatch => {
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "userId": userId,
+        "uid": uids,
+        "folderId": folderId
+      })
+    }).then(resp => resp.json()).then(response => dispatch(moveMultipleHandle(response)));
+  }
+}
+
+export const updateDesc = (userId, uid, desc) => {
+  const url = `${api_url}/setDescription`;
+  return dispatch => {
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "userId": userId,
+        "uid": uid,
+        "description": desc
+      })
+    }).then(res => res.json()).then(response => dispatch(updatedDesc(response)));
+  }
+}
+
+export const updatePriority = (userId, uid, priority) => {
+  const url = `${api_url}/setPriority`;
+  return dispatch => {
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "userId": userId,
+        "uid": uid,
+        "priority": priority
+      })
+    }).then(res => res.json()).then(response => dispatch(updatedPriority(response)));
+  }
+}

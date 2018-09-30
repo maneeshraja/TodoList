@@ -22,4 +22,11 @@ export const CHANGE_FOLDER = "CHANGE_FOLDER";
 export const FOLDER_CHANGE_ERROR= "FOLDER_CHANGE_ERROR";
 export const TOGGLE_CHANGE_FOLDER_SUCCESSFULL = "TOGGLE_CHANGE_FOLDER_SUCCESSFULL";
 
-export const api_url = "http://10.0.0.102:18982";  // 102 = Bhargav, 65 = rpi
+export const MOVE_MULTIPLE = "MOVE_MULTIPLE";
+export const DELETE_MULTIPLE = "DELETE_MULTIPLE";
+
+export const TOGGLE_SUCCESS = "TOGGLE_SUCCESS";
+export const UPDATE_DESC = "UPDATE_DESC";
+export const UPDATE_PRIORITY = "UPDATE_PRIORITY";
+
+export const api_url = "http://10.0.0.65:18982";  // 102 = Bhargav, 65 = rpi

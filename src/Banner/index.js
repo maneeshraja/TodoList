@@ -26,7 +26,6 @@ export default class Banner extends Component{
 
     if (nextProps.showBanner !== this.props.showBanner) {
       this.setState({showBanner: nextProps.showBanner});
-
       if (nextProps.closeAfter !== this.props.closeAfter) {
         this.setState({closeAfter: nextProps.closeAfter}, () => this.resetAfter());
       } else {

@@ -3,7 +3,7 @@ import { PreviousFolders } from './PreviousFolders.js';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {changeFolderRetrieve, removeTodoWhenChanged,
-        changeFolder, toggleFolderChangedSuccessfull} from '../Actions/todo.js';
+        moveMultiple, toggleFolderChangedSuccessfull, toggleSuccess} from '../Actions/todo.js';
 import Modal from '../Modal';
 import Banner from '../Banner';
 import PropTypes from 'prop-types';
@@ -24,6 +24,7 @@ class ChangeFolder extends Component {
 
     this.handlePager = this.handlePager.bind(this);
     this.handleFolderClick = this.handleFolderClick.bind(this);
+    this.handleMoveClicked = this.handleMoveClicked.bind(this);
   }
 
   componentDidMount() {
@@ -39,8 +40,16 @@ class ChangeFolder extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({items: nextProps.items,
-                   showFolderChangeModal: this.props.showFolderChangeModal === true,
-                   showBanner: nextProps.folderChangeSuccesful});
+                   showFolderChangeModal: nextProps.showFolderChangeModal === true});
+
+    if(nextProps.success) {
+      this.props.toggleSuccess(false);
+      this.props.removeTodoWhenChanged(this.props.uid);
+      if(this.props.executeOnMove) {
+        this.props.executeOnMove();
+      }
+      this.setState({showBanner: true});
+    }
   }
 
   handlePager(index, id, name) {
@@ -62,6 +71,10 @@ class ChangeFolder extends Component {
                   });
   }
 
+  handleMoveClicked() {
+      this.props.moveMultiple(1, this.props.uid, this.state.currentFolder);
+   }
+
   render() {
 
     let items = [];
@@ -70,13 +83,13 @@ class ChangeFolder extends Component {
       items = this.state.items;
     }
 
-    items = items.filter((val) => (val.isFolder || val.isFolder === 1) && (val.id !== this.props.uid))
+    items = items.filter((val) => ((val.isFolder || val.isFolder === 1) && !(this.props.uid.includes(val.id))))
 
     return (
       <Modal
         className="folderChangeModal"
         showModal={this.state.showFolderChangeModal}
-        callBack={(s) => {
+        callBack={(s) => {  console.log("abcd");
                             this.setState({showFolderChangeModal: s});
 
                             if(this.props.callBack) {
@@ -116,10 +129,7 @@ class ChangeFolder extends Component {
         <div>
           <button
             className={`toDoButtonChange`}
-            onClick={() => {
-                              this.props.removeTodoWhenChanged(this.props.uid);
-                              this.props.changeFolder(1, this.props.uid, this.state.currentFolder);
-                           }} > Move Here </button>
+            onClick={this.handleMoveClicked} > Move Here </button>
         </div>
       </Modal>
     );
@@ -130,14 +140,17 @@ class ChangeFolder extends Component {
 
 
 function mapStateToProps(state) {
-  return { items: state.todoReducer.changeFolderItems, folderChangeSuccesful: state.todoReducer.folderChangeSuccesful };
+  return { items: state.todoReducer.changeFolderItems,
+           folderChangeSuccesful: state.todoReducer.folderChangeSuccesful,
+            success: state.todoReducer.success};
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({changeFolderRetrieve,
                              removeTodoWhenChanged,
-                             changeFolder,
-                             toggleFolderChangedSuccessfull }, dispatch);
+                             moveMultiple,
+                             toggleFolderChangedSuccessfull,
+                             toggleSuccess }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps) (ChangeFolder);

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import './styles.css';
-import { updateDesc, updatePriority} from '../../Actions/todo.js';
+import { updateDesc, updatePriority, deleteTodo} from '../../Actions/todo.js';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -20,6 +20,7 @@ class SideBar extends Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleDocumentClick = this.handleDocumentClick.bind(this);
     this.handleDescChange = this.handleDescChange.bind(this);
+    this.saveChanges = this.saveChanges.bind(this);
   }
 
   componentDidMount(){
@@ -31,35 +32,29 @@ class SideBar extends Component {
                 });
 
     document.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("scroll", this.handleScroll);
   }
 
   componentWillReceiveProps(nextProps) {
     if(nextProps.showSideBar !== this.state.isOpen) {
-      this.setState({isOpen: nextProps.showSideBar,
-                     changes: {
-                       desc: nextProps.itemValue.description,
-                       priority: nextProps.itemValue.priority
-                     }
-                   });
+      this.setState({isOpen: nextProps.showSideBar});
     }
+
+    this.setState({changes: {
+                    desc: nextProps.itemValue.description,
+                    priority: nextProps.itemValue.priority
+                  }});
   }
 
   componentWillUnmount() {
     document.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("scroll", this.handleScroll);
   }
 
   handleClick(){
     this.setState({isOpen: false});
     if(this.props.callBack){
-      this.props.callBack(false,this.state.changes,this.props.itemValue.id);
-    }
-    if(this.state.changes.descStatus) {
-      this.props.updateDesc(1,this.props.itemValue.id,this.state.changes.desc),
-      this.setState({changes: {descStatus: false}})
-    }
-    if(this.state.changes.priorityStatus){
-      this.props.updatePriority(1,this.props.itemValue.id,this.state.changes.priority),
-      this.setState({changes: { priorityStatus: false}})
+      this.props.callBack(false);
     }
   }
 
@@ -76,23 +71,33 @@ class SideBar extends Component {
     }
   }
 
+  handleScroll(e) {
+    //window.scrollTo(0,0);
+  }
+
   handleDescChange(e){
     this.setState({changes: {descStatus: true,
                             desc: e.target.value
                   }})
   }
 
-  handlePriorityChange(n){
-    this.setState({changes: {priorityStatus: true,
-                             priority: n
-                            }
-                  })
-  }
+  saveChanges(){
+    if(this.props.callBack){
+      this.props.callBack(false,this.state.changes,this.props.itemValue.id);
+    }
+    if(this.state.changes.descStatus) {
+      this.props.updateDesc(1,this.props.itemValue.id,this.state.changes.desc),
+      this.setState({changes: {descStatus: false}})
+    }
+    if(this.state.changes.priorityStatus){
+      this.props.updatePriority(1,this.props.itemValue.id,this.state.changes.priority),
+      this.setState({changes: { priorityStatus: false}})
+    }
 
+  }
 
   render() {
     const itemValue = this.props.itemValue;
-
     return (
       <div onClick={this.handleDocumentClick} onKeyDown={this.state.handleKeyDown} className={`sideBar ${this.props.className?this.props.className:""} ${this.state.isOpen?"show":"hide"}`}>
         <div className={`sideBarMain ${this.state.isOpen?'show':'hide'}`}>
@@ -113,9 +118,27 @@ class SideBar extends Component {
             <div className="descriptionSideBarPriority">
               <label className="descriptionSideBarPriorityLabel"><b> Priority: </b></label> &nbsp;
               <div className="descriptionSideBarPriorityBtns">
-                <input type="radio" name="priority" onChange = {this.handlePriorityChange.bind(this,0)} value="None" checked= {this.state.changes.priority === 0?"checked":null}/> None &nbsp;
-                <input type="radio" name="priority" onChange = {this.handlePriorityChange.bind(this,1)} value="Low" checked= {this.state.changes.priority === 1?"checked":null}/> Low &nbsp;
-                <input type="radio" name="priority" onChange = {this.handlePriorityChange.bind(this,2)} value="High" checked= {this.state.changes.priority === 2?"checked":null}/> High &nbsp;
+                <label>
+                  <input
+                    type="radio"
+                    name="priority"
+                    onChange = {() => this.setState({changes: {...this.state.changes, priorityStatus: true, priority: 0 }}) }
+                    checked={this.state.changes.priority === 0} /> None &nbsp;
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="priority"
+                    onChange = {() => this.setState({changes: {...this.state.changes, priorityStatus: true, priority: 1 }}) }
+                    checked={this.state.changes.priority === 1} /> Low &nbsp;
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="priority"
+                    onChange = {() => this.setState({changes: {...this.state.changes, priorityStatus: true, priority: 2 }}) }
+                    checked={this.state.changes.priority === 2} /> High &nbsp;
+                </label>
               </div>
             </div>
 
@@ -127,11 +150,18 @@ class SideBar extends Component {
               <label className="descriptionSideBarUpdatedTimeLabel"><b> Updated Date/Time: </b> </label>
               <p className="descriptionSideBarUpdatedTimeText"> {itemValue.updated_time} </p>
             </div>
-            <div className="descriptionSideBarUpdatedTime">
-              <button className="toDoButton"> Delete </button>
+            <div className="descriptionSideBarSave">
+              <button className="toDoButton" onClick={this.saveChanges}> Save </button>
             </div>
-          </div>
-          <div className="descriptionSideBarNote"> <i> Changes will be saved automatically </i>
+            <div className="descriptionSideBarDelete">
+              <button className="toDoButton"
+                      onClick={() => { this.props.deleteTodo(1, itemValue.id, itemValue.parent)
+                                       this.setState({isOpen: false})
+                                       if(this.props.callBack){
+                                         this.props.callBack(false);
+                                       }
+                                      } }> Delete </button>
+            </div>
           </div>
         </div>
       </div>
@@ -152,7 +182,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({updateDesc,
-                             updatePriority}, dispatch);
+                             updatePriority,
+                             deleteTodo}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps) (SideBar);

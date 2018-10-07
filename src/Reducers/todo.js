@@ -35,7 +35,9 @@ const todoReducer = (state={items:[],
                                                     parent: p.parent,
                                                     text: p.text,
                                                     updated_time: d,
-                                                    created_time: d}];
+                                                    created_time: d,
+                                                    priority: 0,
+                                                    description: ""}];
                     returnState = {...state, saving: false, items};
                         return returnState;
     case UPDATE_TODO_ITEM_CHECKBOX: returnState = {...state, saving: false};
@@ -44,7 +46,7 @@ const todoReducer = (state={items:[],
                         return returnState;
     case UPDATE_ITEMS: returnState = {...state, items:action.data};
                         return returnState;
-    case DELETE_TODO: returnState = {...state, deleting: false};
+    case DELETE_TODO: returnState = {...state, deleting: false, items: state.items.filter((val) => val.id !== action.uid)};
                         return returnState;
     case EDIT_TODO: returnState = {...state, editing: false};
                         return returnState;

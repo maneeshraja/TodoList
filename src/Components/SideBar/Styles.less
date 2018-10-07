@@ -23,7 +23,7 @@
     position: absolute;
     right: -40%;
     height: 100%;
-    width: 40%;
+    width: 403px;
     top: 0px;
     background-color: #ececec;
 
@@ -41,9 +41,20 @@
 
 .descriptionSideBar{
     margin-top: 25px;
+
+    &Save, &Delete {
+      float: left;
+      width: 33.3%;
+    }
+
+    &Save {
+      margin-left: 16.6%;
+    }
+
     &Heading{
       .centerText;
-      margin: 0px;
+      margin: auto;
+      width: 90%;
 
       &Type {
         display:inline-block;
@@ -54,6 +65,7 @@
         display: inline-block;
         font-size: 30px;
         margin-bottom: 3px;
+        word-break: break-all;
       }
     }
 
@@ -94,6 +106,9 @@
       &Btns {
         display: inline-block;
         margin: 15px 0px;
+        Label {
+          cursor: pointer;
+        }
       }
     }
 
@@ -129,6 +144,15 @@
     }
   }
   .descriptionSideBar{
+
+    &Save, &Delete {
+      float: none;
+      width: 100%;
+    }
+
+    &Save {
+      margin-left: 0px;
+    }
 
     &Heading{
 
@@ -203,6 +227,14 @@
 
       &.hide {
         right: -496px;
+      }
+    }
+  }
+  .descriptionSideBar {
+
+    &Status, &CreationTime, &UpdatedTime {
+      &Text {
+        margin-left: 20px;
       }
     }
   }

@@ -28,10 +28,11 @@ const savedTodo = (resp) => {
   }
 }
 
-const deletedTodo = (resp) => {
+const deletedTodo = (resp, uid) => {
   return {
     type: DELETE_TODO,
-    data: resp
+    data: resp,
+    uid: uid
   }
 }
 
@@ -252,7 +253,7 @@ export const deleteTodo = (userId,uid,parent) => {
         "uid": uid,
         "parent": parent
       })
-    }).then(res => res.json()).then(response => dispatch(deletedTodo(response)));
+    }).then(res => res.json()).then(response => dispatch(deletedTodo(response, uid)));
     }
 }
 

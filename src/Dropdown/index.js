@@ -16,6 +16,8 @@ export default class Dropdown extends Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyDownItem = this.handleKeyDownItem.bind(this);
     this.handleDocumentClick = this.handleDocumentClick.bind(this);
+
+    this.dropdownContainer = React.createRef();
   }
 
   componentDidMount() {
@@ -33,7 +35,8 @@ export default class Dropdown extends Component {
   }
 
   handleDocumentClick(e) {
-    if(!e.target.closest(".dropdownContainer")) {
+    const toCheck = e.target.closest(".dropdownContainer");
+    if(!toCheck || (toCheck && toCheck !== this.dropdownContainer.current)) {
       this.setState({isDropdownOpen: false});
     }
   }
@@ -113,7 +116,7 @@ export default class Dropdown extends Component {
     <img src="./down.png" className={`dropdownContainerButtonDownIcon ${this.state.isDropdownOpen?"rotate":""}`}/>
     */
     return (
-      <div className={`${this.props.className} dropdownContainer`}>
+      <div className={`${this.props.className} dropdownContainer`} ref={this.dropdownContainer}>
           <div className={`dropdownContainerButton ${this.props.isDisabled?"disableButton":""}`} tabIndex={0} onClick={this.handleDropdownClick} onKeyDown={this.handleKeyDown}>
             { this.state.selectedItem }
             <div className={`dropdownContainerButtonDownIcon ${this.state.isDropdownOpen?"rotate":""}`}> </div>

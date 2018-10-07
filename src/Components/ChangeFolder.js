@@ -19,7 +19,10 @@ class ChangeFolder extends Component {
       showFolderChangeModal: false,
       previousFolders: [],
       currentFolderName: "home.png",
-      showBanner: false
+      showBanner: false,
+      bannerStatus: 0,
+      bannerMessage: "",
+      bannerAfterClose: 10,
     }
 
     this.handlePager = this.handlePager.bind(this);
@@ -48,7 +51,10 @@ class ChangeFolder extends Component {
       if(this.props.executeOnMove) {
         this.props.executeOnMove();
       }
-      this.setState({showBanner: true});
+      this.setState({showBanner: true,
+                     bannerMessage: "Successfully Moved",
+                     bannerStatus: 1,
+                     bannerAfterClose: 5});
     }
   }
 
@@ -72,7 +78,14 @@ class ChangeFolder extends Component {
   }
 
   handleMoveClicked() {
-      this.props.moveMultiple(1, this.props.uid, this.state.currentFolder);
+      if(this.state.currentFolder === this.props.currentFolder) {
+        this.setState({showBanner: true,
+                       bannerMessage: "Can't Move into Same Folder",
+                       bannerStatus: 2,
+                       bannerAfterClose: 5});
+      } else {
+        this.props.moveMultiple(1, this.props.uid, this.state.currentFolder);
+      }
    }
 
   render() {
@@ -89,7 +102,7 @@ class ChangeFolder extends Component {
       <Modal
         className="folderChangeModal"
         showModal={this.state.showFolderChangeModal}
-        callBack={(s) => {  console.log("abcd");
+        callBack={(s) => { 
                             this.setState({showFolderChangeModal: s});
 
                             if(this.props.callBack) {
@@ -114,16 +127,20 @@ class ChangeFolder extends Component {
         <div className={`folderChangeModalBanner`}>
           <Banner
             showBanner={this.state.showBanner}
-            status={1}
-            closeAfter={1}
+            status={this.state.bannerStatus}
+            closeAfter={this.state.bannerAfterClose}
             callBack={(s) => {
-                                this.setState({showBanner: s, showFolderChangeModal: false});
+                                this.setState({showBanner: s, bannerAfterClose: 0});
+                                if( this.state.bannerStatus !== 2) {
+                                  this.setState({showFolderChangeModal: false});
+                                }
+
                                 if(this.props.callBack) {
                                   this.props.callBack(s);
                                 }
-                                this.props.toggleFolderChangedSuccessfull(false);
+                                //this.props.toggleFolderChangedSuccessfull(false);
                              }}>
-            Successfully <b>moved</b>!
+            {this.state.bannerMessage}
           </Banner>
         </div>
         <div>

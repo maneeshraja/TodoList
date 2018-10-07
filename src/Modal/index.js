@@ -66,5 +66,6 @@ export default class Modal extends Component {
 Modal.propTypes = {
   showModal: PropTypes.bool,
   callBack: PropTypes.func,
-  className: PropTypes.string
+  className: PropTypes.string,
+  
 }

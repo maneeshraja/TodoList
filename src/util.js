@@ -34,3 +34,27 @@ function merge (left, right, callBack) {
 
   return result.concat(left.slice(indexLeft)).concat(right.slice(indexRight))
 }
+
+/*
+let strLength = text.length;
+let whitespaces = text.match(/\s/g).length;
+let capitals = text.match(/[A-Z]/g).length;
+let smallLetters = text.match(/[a-z]/g).length;
+let numbers = text.match(/[0-9]/g).length;
+let specialCharacs = strLength - (whitespaces + capitals + smallLetters + numbers);
+
+
+  if(numbers > 0 && specialCharacs > 0) {
+    Not valid Name
+  }
+
+  //For Password
+  if(whitespaces > 0){
+    whiteSpaces not allowed
+  }else {
+    if(strLength <8 || numbers === 0 || smallLetters === 0 || capitals === 0) {
+      Requirements not met
+    }
+  }
+
+*/

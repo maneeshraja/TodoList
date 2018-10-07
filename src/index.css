@@ -1,5 +1,5 @@
 .LoginBox{
-  margin:150px 100px;
+  margin:50px 100px;
   border: 2px solid darkgray;
   width: 200px;
   height: 330px;
@@ -7,8 +7,13 @@
   border-radius: 20px;
 }
 
+.loginPageTitle{
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 0px;
+}
 
-.loginPageInput {
+.loginPageInput , .registerModalFormTableRowInput, .forgotModalFormTableRowInput{
   padding: 4px 10px;
   border-top: none;
   border-bottom:2px solid darkgray;;
@@ -20,7 +25,7 @@
   font-size: 15px;
 }
 
-.loginButton, .registerButton{
+.loginButton, .registerButton, .forgotButton{
   background-color: transparent;
   box-shadow: none;
   outline: none;
@@ -36,9 +41,15 @@
   transition: .2s all;
   border-radius: 14px;
   user-select: none;
+  text-align: center;
 }
-.registerButton{
-  margin-top: 25px;
+.loginButton:hover, .registerButton:hover, .forgotButton:hover{
+  background-color: #F7F7F7;
+  transition: .2s all;
+}
+
+.registerButton, .forgotButton{
+  margin-top: 15px;
 }
 
 .smallLinks{
@@ -55,24 +66,51 @@
     margin: 0px;
     margin-bottom: 20px;
 }
-.loginPageTable {
+.registerModalFormTableRow{
   text-align: left;
   padding-left: 15px;
 }
 
-.registrationForm{
+.forgotModalFormTableRow {
+  text-align: left;
+  padding-left: 40px;
+}
+
+.registerModalForm, .forgotModalForm{
   width: 100%;
 }
-.registerModal{
+.registerModal, .forgotModal{
   margin:auto;
 }
 
-.registerModalHeading{
+.registerModalHeading, .forgotModalHeading{
   text-align: center;
 }
 
+.registrationPageChecks{
+ text-align: center;
+ margin-top: 15px;
+}
+
+.registrationPageChecksLabel{
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.registrationPageCheck1, .registrationPageCheck2, .registrationPageCheck3, .registrationPageCheck4{
+  display: inline-block;
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 10px;
+  opacity: 0.9;
+}
+.check {
+  text-decoration: line-through;
+  opacity: 0.4 !important;
+}
+
 @media screen and (max-width: 650px) {
-  .loginPageInput {
+  .loginPageInput, .registerModalFormTableRowInput, .forgotModalFormTableRowInput {
     width: 80%;
     display: block;
     margin: auto;
@@ -83,6 +121,11 @@
     margin-left: auto;
     margin-right: auto;
   }
+
+  .registrationPageChecksLabel{
+    display: block;
+  }
+
 }
 
 .loginAnchorTag{

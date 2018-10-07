@@ -7,7 +7,7 @@
   user-select: none;
   position: fixed;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   left: 0px;
   top: 100%;
   background-color: rgba(0,0,0,.5);
@@ -22,7 +22,7 @@
     transition: all .5s;
     position: absolute;
     right: -40%;
-    height: 100vh;
+    height: 100%;
     width: 40%;
     top: 0px;
     background-color: #ececec;
@@ -47,11 +47,13 @@
 
       &Type {
         display:inline-block;
+        margin-top: 2px;
       }
 
       &Text {
         display: inline-block;
         font-size: 30px;
+        margin-bottom: 3px;
       }
     }
 
@@ -108,13 +110,6 @@
         padding-left: 10px;
         margin-left: 20px;
       }
-    }
-    &Note {
-      color: darkgray;
-      position: fixed;
-      bottom: 2%;
-      font-size: 12px;
-      margin-left: 12%;
     }
 }
 
@@ -193,9 +188,6 @@
       }
     }
 
-  }
-  &Note {
-    margin-left: 10%;
   }
 }
 

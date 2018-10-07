@@ -339,3 +339,17 @@ display: inline-block;
     }
   }
 }
+
+.priorityColor {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  &.Low {
+    background-color: lighten(orange, 20%);
+  }
+  &.High {
+    background-color: lighten(red, 20%);
+  }
+}

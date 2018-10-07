@@ -18,18 +18,20 @@ export default class Banner extends Component{
   componentDidMount() {
     this.setState({showBanner: this.props.showBanner,
                    closeAfter: this.props.closeAfter,
-                   closeButton: this.props.closeButton},
-                   () => this.resetAfter());
+                   closeButton: this.props.closeButton});
+
+    if (this.props.showBanner && this.props.closeAfter) {
+      this.resetAfter(this.props.closeAfter);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-
     if (nextProps.showBanner !== this.props.showBanner) {
       this.setState({showBanner: nextProps.showBanner});
       if (nextProps.closeAfter !== this.props.closeAfter) {
-        this.setState({closeAfter: nextProps.closeAfter}, () => this.resetAfter());
+        this.setState({closeAfter: nextProps.closeAfter}, () => this.resetAfter(nextProps.closeAfter));
       } else {
-        this.resetAfter();
+        this.resetAfter(nextProps.closeAfter);
       }
     }
 
@@ -38,15 +40,15 @@ export default class Banner extends Component{
     }
   }
 
-  resetAfter() {
-    if(this.state.closeAfter) {
-      if(this.state.closeAfter > 0) {
+  resetAfter(time) {
+    if(time) {
+      if(time > 0) {
         setTimeout(() => {
           this.setState({showBanner: false});
           if(this.props.callBack) {
             this.props.callBack(false);
           }
-        },this.state.closeAfter*1000);
+        },time*1000);
       }
     }
   }

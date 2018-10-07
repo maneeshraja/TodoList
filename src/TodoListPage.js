@@ -83,7 +83,10 @@ class ToDoListPage  extends Component {
                           {id: 6, item: "InCompleted Folders", disabled: false},
                           {id: 7, item: "Completed Folders", disabled: false},
                           {id: 8, item: "Pending Tasks", disabled: false},
-                          {id: 9, item: "Finished Tasks", disabled: false}];
+                          {id: 9, item: "Finished Tasks", disabled: false},
+                          {id: 10, item: "High priority", disabled: false},
+                          {id: 11, item: "Low priority", disabled: false},
+                          {id: 12, item: "No priority", disabled: false}];
 
     this.sortDropdownList = [ {id: 1, item: "None", disabled: false, active: true},
                               {id: 2, item: "Created Date (Ascending)", disabled: false},
@@ -93,7 +96,9 @@ class ToDoListPage  extends Component {
                               {id: 6, item: "Name (Ascending)", disabled: false},
                               {id: 7, item: "Name (Descending)", disabled: false},
                               {id: 8, item: "Completed (Top)", disabled: false},
-                              {id: 9, item: "Incompleted (Top)", disabled: false},];
+                              {id: 9, item: "Incompleted (Top)", disabled: false},
+                              {id: 10, item: "Priority (Ascending)", disabled: false},
+                              {id: 11, item: "Priority (Descending)", disabled: false},];
 
     this.bannerStatus = { Info: 0,
                           Success: 1,
@@ -315,7 +320,15 @@ class ToDoListPage  extends Component {
                                     if(value.checked && this.state.dropdownFilterValue === 9){
                                       return true;
                                     }
-
+                                    if(value.priority === 2 && this.state.dropdownFilterValue === 10){
+                                      return true;
+                                    }
+                                    if(value.priority === 1 && this.state.dropdownFilterValue === 11){
+                                      return true;
+                                    }
+                                    if(value.priority === 0 && this.state.dropdownFilterValue === 12){
+                                      return true;
+                                    }
                                   });
   }
 
@@ -339,6 +352,10 @@ class ToDoListPage  extends Component {
       return mergeSort(list, function(a,b) { return a.checked > b.checked });
     } else if(order === 9) {
       return mergeSort(list, function(a,b) { return a.checked < b.checked });
+    } else if(order === 10) {
+      return mergeSort(list, function(a,b) { return a.priority < b.priority });
+    } else if(order === 11) {
+      return mergeSort(list, function(a,b) { return a.priority > b.priority });
     } else {
       return list;
     }
@@ -372,7 +389,6 @@ class ToDoListPage  extends Component {
 
     const disableGroupedBtns =  multipleSelected.length <= 0?"disabledInput":"";
     const disableSelectBtn = multipleSelected.length === folderSpecificList.length?"disabledInput":"";
-console.log(folderSpecificList);
     return(
       <div className="pagestyles">
         <Loader showLoader={showLoader} callBack={(status) => this.setState({showLoader: status})}>
@@ -454,7 +470,7 @@ console.log(folderSpecificList);
         </div>
         <div className={`${folderSpecificList.length === 0?'d_none':'d_block'}`}>
           {folderSpecificList.map((value, index) => value.isFolder?(
-                <div className="todoRow" key={index}>
+                <div className={`todoRow`} key={index}>
                   <CheckBox
                       checked={multipleSelected.includes(value.id)}
                       className="multiCheck"
@@ -468,21 +484,24 @@ console.log(folderSpecificList);
                                                     currentTodoText: value.text})
                                 }
                     />
-                  <span className="todoRowHover">
-                    <div className={`todoRowFolder ${multipleSelected.length > 0 && !multipleSelected.includes(value.id)?'opacity0dot4':''}`}
-                         folderid={value.folderId}
-                         foldertext={value.text}
-                         onClick={this.handleFolderClick}>
-                      <img src="folder.png" className={`folderImg ${value.checked?'checkedFolder':''}`} />
-                      <span className={`${value.checked?'checked':''}`}> {value.text} </span>
-                    </div>
-                    <span className={`todoRowFolderDescription`}
-                          onClick={() => this.setState({ showSideBar: true, itemValue: value})}> d
+                  <span className={`${multipleSelected.length > 0 && !multipleSelected.includes(value.id)?'opacity0dot4':''}`}>
+                    <div className={` priorityColor ${value.priority === 1?'Low':value.priority === 2?'High':'None'}`}/>
+                    <span className={`todoRowHover`}>
+                      <div className={`todoRowFolder `}
+                           folderid={value.folderId}
+                           foldertext={value.text}
+                           onClick={this.handleFolderClick}>
+                        <img src="folder.png" className={`folderImg ${value.checked?'checkedFolder':''}`} />
+                        <span className={`${value.checked?'checked':''}`}> {value.text} </span>
+                      </div>
+                      <span className={`todoRowFolderDescription`}
+                            onClick={() => this.setState({ showSideBar: true, itemValue: value})}> d
+                      </span>
                     </span>
                   </span>
                 </div>
               ):(
-                <div className="todoRow" key={index}>
+                <div className={`todoRow`} key={index}>
                   <CheckBox checked={multipleSelected.includes(value.id)}
                             className="multiCheck"
                             callBack={(checked) => this.processMultipleSelected(checked, value.id)}
@@ -495,7 +514,8 @@ console.log(folderSpecificList);
                                                       })
                                 }
                     />
-                  <span className={`${multipleSelected.length > 0 && !multipleSelected.includes(value.id)?'opacity0dot4':''} todoRowItem`}>
+                  <span className={` ${multipleSelected.length > 0 && !multipleSelected.includes(value.id)?'opacity0dot4':''} todoRowItem`}>
+                  <div className={` priorityColor ${value.priority === 1?'Low':value.priority === 2?'High':'None'}`}/>
                     <TodoItem
                        text={value.text}
                        checked={value.checked===1}
@@ -564,6 +584,7 @@ console.log(folderSpecificList);
           </div>
         </Modal>
         <ChangeFolder showFolderChangeModal={showFolderChangeModal}
+                      currentFolder= {this.state.currentFolder}
                       uid={multipleSelected}
                       callBack={(s) => {
                                           this.setState({showFolderChangeModal: s, multipleSelected: []});

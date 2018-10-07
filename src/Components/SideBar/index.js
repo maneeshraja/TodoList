@@ -173,7 +173,8 @@ class SideBar extends Component {
 SideBar.propTypes = {
   showSideBar: PropTypes.bool,
   callBack: PropTypes.func,
-  className: PropTypes.string
+  className: PropTypes.string,
+  itemValue: PropTypes.object
 }
 
 function mapStateToProps(state) {

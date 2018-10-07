@@ -68,9 +68,15 @@ export default class Banner extends Component{
     const showCloseButton = !(this.state.closeButton === false);
 
     return(
-      <div className={`banner ${this.state.showBanner?"block":"none"} ${color}`}>
-        {this.props.children}
-        <div className={`${showCloseButton?'d_block':'d_none'} bannerButtonClose`} onClick={this.closeBanner}> + </div>
+      <div>
+        {this.state.showBanner?(
+          <div className={`banner ${color}`}>
+            {this.props.children}
+            <div className={`${showCloseButton?'d_block':'d_none'} bannerButtonClose`} onClick={this.closeBanner}> + </div>
+          </div>
+        ):(
+          <span> </span>
+        )}
       </div>
     )
   }

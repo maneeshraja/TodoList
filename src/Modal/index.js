@@ -50,13 +50,20 @@ export default class Modal extends Component {
 
   render(){
     return (
-      <div onClick={this.handleDocumentClick} onKeyDown={this.state.handleKeyDown} className={`modal ${this.props.className?this.props.className:""} ${this.state.isOpen?"open":"close"}`}>
-        <div className={`modalBody`}>
-          <div onClick={this.handleClick} className="modalBodyClose"> + </div>
-          <div>
-            {this.props.children}
+      <div>
+        {this.state.isOpen?(
+          <div onClick={this.handleDocumentClick} onKeyDown={this.state.handleKeyDown} className={`modal ${this.props.className?this.props.className:""} `}>
+            <div className={`modalBody`}>
+              <div onClick={this.handleClick} className="modalBodyClose"> + </div>
+              <div>
+                {this.props.children}
+              </div>
+            </div>
           </div>
-        </div>
+        ):(
+          <span> </span>
+        )}
+
       </div>
     )
   }
@@ -67,5 +74,5 @@ Modal.propTypes = {
   showModal: PropTypes.bool,
   callBack: PropTypes.func,
   className: PropTypes.string,
-  
+
 }

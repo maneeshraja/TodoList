@@ -25,9 +25,9 @@ class SideBar extends Component {
 
   componentDidMount(){
     this.setState({isOpen: this.props.showSideBar,
-                   changes: {
-                     desc: this.props.itemValue.description,
-                     priority: this.props.itemValue.priority
+                   changes: {...this.state.changes,
+                                  desc: this.props.itemValue.description,
+                                  priority: this.props.itemValue.priority
                   }
                 });
 
@@ -40,7 +40,7 @@ class SideBar extends Component {
       this.setState({isOpen: nextProps.showSideBar});
     }
 
-    this.setState({changes: {
+    this.setState({changes: {...this.state.changes,
                     desc: nextProps.itemValue.description,
                     priority: nextProps.itemValue.priority
                   }});
@@ -76,9 +76,7 @@ class SideBar extends Component {
   }
 
   handleDescChange(e){
-    this.setState({changes: {descStatus: true,
-                            desc: e.target.value
-                  }})
+    this.setState({changes: {...this.state.changes, descStatus: true, desc: e.target.value}});
   }
 
   saveChanges(){
@@ -91,7 +89,7 @@ class SideBar extends Component {
     }
     if(this.state.changes.priorityStatus){
       this.props.updatePriority(1,this.props.itemValue.id,this.state.changes.priority),
-      this.setState({changes: { priorityStatus: false}})
+      this.setState({changes: {...this.state.changes, priorityStatus: false}})
     }
 
   }
@@ -108,7 +106,7 @@ class SideBar extends Component {
             </div>
             <div className="descriptionSideBarStatus">
               <label className="descriptionSideBarStatusLabel"> <b> Status: </b></label>
-              <p className="descriptionSideBarStatusText"> {itemValue.checked===0?"Incomplete":"Complete"} </p>
+              <p className="descriptionSideBarStatusText"> {itemValue.checked?"Complete":"Incomplete"} </p>
             </div>
             <div className="descriptionSideBarTextArea">
               <label className="descriptionSideBarTextAreaLabel"><b> Description: </b></label><br/>

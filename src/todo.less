@@ -122,12 +122,16 @@ display: inline-block;
 
   &Item {
     transition: 0.2s;
+    .todoRowItemDescription, .todoRowFolderChange{
+      .d_inline;
+      &Img{
+        width: 10px;
+        height: 10px;
+      }
+    }
     &:hover {
       transition: 0.2s;
       background-color: lighten(lightgray,15%);
-      .todoRowItemDescription, .todoRowFolderChange{
-        .d_inline;
-      }
     }
 
     &Description {
@@ -140,12 +144,16 @@ display: inline-block;
   }
   &Hover{
     transition: 0.2s;
+    .todoRowFolderDescription, .todoRowFolderChange{
+      .d_inline;
+      &Img{
+        width: 10px;
+        height: 10px;
+      }
+    }
     &:hover{
       transition: 0.2s;
       background-color: lighten(lightgray,15%);
-      .todoRowFolderDescription, .todoRowFolderChange{
-        .d_inline;
-      }
     }
 
   }

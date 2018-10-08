@@ -34,8 +34,6 @@ class ChangeFolder extends Component {
 
     this.setState({showFolderChangeModal: this.props.showFolderChangeModal === true});
 
-    this.props.changeFolderRetrieve(this.state.currentFolder);
-
     if(this.props.items) {
       this.setState({items: this.props.items});
     }
@@ -45,6 +43,10 @@ class ChangeFolder extends Component {
     this.setState({items: nextProps.items,
                    showFolderChangeModal: nextProps.showFolderChangeModal === true});
 
+    if(nextProps.showFolderChangeModal && nextProps.showFolderChangeModal !== this.state.showFolderChangeModal) {
+      this.props.changeFolderRetrieve(this.state.currentFolder);
+    }
+    
     if(nextProps.success) {
       this.props.toggleSuccess(false);
       this.props.removeTodoWhenChanged(this.props.uid);
@@ -102,7 +104,7 @@ class ChangeFolder extends Component {
       <Modal
         className="folderChangeModal"
         showModal={this.state.showFolderChangeModal}
-        callBack={(s) => { 
+        callBack={(s) => {
                             this.setState({showFolderChangeModal: s});
 
                             if(this.props.callBack) {

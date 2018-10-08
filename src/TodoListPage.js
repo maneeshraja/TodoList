@@ -495,7 +495,8 @@ class ToDoListPage  extends Component {
                         <span className={`${value.checked?'checked':''}`}> {value.text} </span>
                       </div>
                       <span className={`todoRowFolderDescription`}
-                            onClick={() => this.setState({ showSideBar: true, itemValue: value})}> d
+                            onClick={() => this.setState({ showSideBar: true, itemValue: value})}>
+                              <img src="details.png" className={`todoRowFolderDescriptionImg`} />
                       </span>
                     </span>
                   </span>
@@ -522,7 +523,8 @@ class ToDoListPage  extends Component {
                        id={value.id}
                        callBack={this.itemOnClick}/>
                     <span className={`todoRowItemDescription`}
-                          onClick={() => this.setState({ showSideBar: true, itemValue: value})}> d
+                          onClick={() => this.setState({ showSideBar: true, itemValue: value})}>
+                            <img src="details.png" className={`todoRowItemDescriptionImg`} />
                     </span>
                   </span>
                 </div>

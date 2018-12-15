@@ -84,11 +84,11 @@ class SideBar extends Component {
       this.props.callBack(false,this.state.changes,this.props.itemValue.id);
     }
     if(this.state.changes.descStatus) {
-      this.props.updateDesc(1,this.props.itemValue.id,this.state.changes.desc),
+      this.props.updateDesc(this.props.userId,this.props.itemValue.id,this.state.changes.desc, this.props.token),
       this.setState({changes: {descStatus: false}})
     }
     if(this.state.changes.priorityStatus){
-      this.props.updatePriority(1,this.props.itemValue.id,this.state.changes.priority),
+      this.props.updatePriority(this.props.userId,this.props.itemValue.id,this.state.changes.priority, this.props.token),
       this.setState({changes: {...this.state.changes, priorityStatus: false}})
     }
 
@@ -153,7 +153,7 @@ class SideBar extends Component {
             </div>
             <div className="descriptionSideBarDelete">
               <button className="toDoButton"
-                      onClick={() => { this.props.deleteTodo(1, itemValue.id, itemValue.parent)
+                      onClick={() => { this.props.deleteTodo(this.props.userId, itemValue.id, itemValue.parent, this.props.token)
                                        this.setState({isOpen: false})
                                        if(this.props.callBack){
                                          this.props.callBack(false);
@@ -176,7 +176,10 @@ SideBar.propTypes = {
 }
 
 function mapStateToProps(state) {
-  return { items: state.todoReducer.items}
+  return { items: state.todoReducer.items,
+           userId: state.authenticationReducer.userId,
+           token: state.authenticationReducer.token
+          }
 }
 
 function mapDispatchToProps(dispatch) {

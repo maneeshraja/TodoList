@@ -18,7 +18,7 @@ const todoReducer = (state={items:[],
                      success: false}, action) => {
 
   let returnState = {};
-
+  
   switch(action.type) {
     case RETRIEVE_TODO: returnState = {...state, items: action.data.items};
                         return returnState;

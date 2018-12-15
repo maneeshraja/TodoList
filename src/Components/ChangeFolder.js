@@ -44,9 +44,9 @@ class ChangeFolder extends Component {
                    showFolderChangeModal: nextProps.showFolderChangeModal === true});
 
     if(nextProps.showFolderChangeModal && nextProps.showFolderChangeModal !== this.state.showFolderChangeModal) {
-      this.props.changeFolderRetrieve(this.state.currentFolder);
+      this.props.changeFolderRetrieve(this.state.currentFolder, this.props.userId, this.props.token);
     }
-    
+
     if(nextProps.success) {
       this.props.toggleSuccess(false);
       this.props.removeTodoWhenChanged(this.props.uid);
@@ -58,10 +58,15 @@ class ChangeFolder extends Component {
                      bannerStatus: 1,
                      bannerAfterClose: 5});
     }
+
+    if (nextProps.userId !== this.state.userId) {
+      this.setState({userId: nextProps.userId});
+    }
+
   }
 
   handlePager(index, id, name) {
-    this.props.changeFolderRetrieve(id);
+    this.props.changeFolderRetrieve(id, this.props.userId, this.props.token);
     this.setState({currentFolder: id, currentFolderName: name, previousFolders: this.state.previousFolders.slice(0, index)});
   }
 
@@ -69,7 +74,7 @@ class ChangeFolder extends Component {
     const folderId = parseInt(e.currentTarget.getAttribute("folderid"));
     const folderText = e.currentTarget.getAttribute("foldertext");
 
-    this.props.changeFolderRetrieve(folderId);
+    this.props.changeFolderRetrieve(folderId, this.props.userId, this.props.token);
 
     this.setState({currentFolder: folderId,
                    currentFolderName: folderText,
@@ -86,7 +91,7 @@ class ChangeFolder extends Component {
                        bannerStatus: 2,
                        bannerAfterClose: 5});
       } else {
-        this.props.moveMultiple(1, this.props.uid, this.state.currentFolder);
+        this.props.moveMultiple(this.props.userId, this.props.uid, this.state.currentFolder, this.props.token);
       }
    }
 
@@ -161,7 +166,8 @@ class ChangeFolder extends Component {
 function mapStateToProps(state) {
   return { items: state.todoReducer.changeFolderItems,
            folderChangeSuccesful: state.todoReducer.folderChangeSuccesful,
-            success: state.todoReducer.success};
+           success: state.todoReducer.success, userId: state.todoReducer.userId,
+           token: state.authenticationReducer.token, userId: state.authenticationReducer.userId};
 }
 
 function mapDispatchToProps(dispatch) {

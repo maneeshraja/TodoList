@@ -14,6 +14,7 @@ import {retrieveTodo,
         deleteTodo,
         toggleSaving,
         deleteMultiple} from './Actions/todo.js';
+import {logout} from './Actions/authentication.js'
 import { mergeSort } from './util.js';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -54,7 +55,7 @@ class ToDoListPage  extends Component {
       loaderText: "",
       dropdownSortValue: 1,
       multipleSelected: [],
-      itemValue: {}
+      itemValue: {},
     }
 
     this.inputText = React.createRef();
@@ -106,10 +107,16 @@ class ToDoListPage  extends Component {
                           Error: 3 };
   }
 
+  componentWillMount(){
+    if(!this.props.token && this.props.history) {
+        this.props.history.push("/");
+    }
+  }
+
   componentDidMount() {
     this.inputText.current.focus();
-    this.props.retrieveTodo(this.state.currentFolder);
-    this.props.getInitialState();
+    this.props.retrieveTodo(this.state.currentFolder,this.props.userId, this.props.token);
+    this.props.getInitialState(this.props.userId, this.props.token);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -119,6 +126,10 @@ class ToDoListPage  extends Component {
 
     if(this.state.identity !== nextProps.initialState.identity_count) {
       this.setState({identity: parseInt(nextProps.initialState.identity_count)});
+    }
+
+    if(!nextProps.loginSuccess){
+      this.props.history.push("/");
     }
 
     if(nextProps.items && !isNaN(nextProps.items.length)) {
@@ -153,7 +164,7 @@ class ToDoListPage  extends Component {
       }
     }
 
-    this.props.updateTodoItemCheckBox(1,status,n,obj.parent);
+    this.props.updateTodoItemCheckBox(this.props.userId,status,n,obj.parent, this.props.token);
 
     this.setState({todo: nObj});
   }
@@ -179,14 +190,14 @@ class ToDoListPage  extends Component {
         folder_count = folderCount;
 
         this.props.toggleSaving(true);
-        this.props.saveTodo(1, true, false, this.inputText.current.value, folderCount, this.state.identity, this.state.currentFolder);
+        this.props.saveTodo(this.props.userId, true, false, this.inputText.current.value, folderCount, this.state.identity, this.state.currentFolder, this.props.token);
 
         // resetting the Folder toggle on UI
         this.folder.current.checked = false;
         this.setState({folderChecked: false});
       } else {
         this.props.toggleSaving(true);
-        this.props.saveTodo(1, false, false, this.inputText.current.value, -1, this.state.identity, this.state.currentFolder);
+        this.props.saveTodo(this.props.userId, false, false, this.inputText.current.value, -1, this.state.identity, this.state.currentFolder, this.props.token);
     }
 
       this.setState({identity: this.state.identity+1,
@@ -211,7 +222,7 @@ class ToDoListPage  extends Component {
     const folderId = parseInt(e.currentTarget.getAttribute("folderid"));
     const folderText = e.currentTarget.getAttribute("foldertext");
 
-    this.props.retrieveTodo(folderId);
+    this.props.retrieveTodo(folderId,this.props.userId, this.props.token);
 
     this.setState({currentFolder: folderId,
                    currentFolderName: folderText,
@@ -223,7 +234,7 @@ class ToDoListPage  extends Component {
   }
 
   handlePager(index, id, name) {
-    this.props.retrieveTodo(id);
+    this.props.retrieveTodo(id,this.props.userId, this.props.token);
     this.setState({currentFolder: id,
                    multipleSelected: [],
                    currentFolderName: name,
@@ -240,10 +251,9 @@ class ToDoListPage  extends Component {
   }
 
   editButtonClicked() {
-    console.log(this.state.currentTodoText);
     const txt = this.updateTodoText.current.value;
     if(txt && txt !== this.state.currentTodoText) {
-      this.props.editTodo(1, txt, this.state.currentTodoUid);
+      this.props.editTodo(this.props.userId, txt, this.state.currentTodoUid, this.props.token);
       this.setState({showEditModal: false});
 
       const todo = this.state.todo.map((value) => {
@@ -269,7 +279,7 @@ class ToDoListPage  extends Component {
 
   deleteButtonClicked() {
 
-    this.props.deleteMultiple(1, this.state.multipleSelected, this.state.currentTodoParent);
+    this.props.deleteMultiple(this.props.userId, this.state.multipleSelected, this.state.currentTodoParent, this.props.token);
 
     const todo = this.state.todo.filter((value) => !this.state.multipleSelected.includes(value.id));
     this.setState({todo});
@@ -277,7 +287,7 @@ class ToDoListPage  extends Component {
 
     this.setState({showDeleteModal: false, multipleSelected: []});
     /*
-    this.props.deleteTodo(1, this.state.currentTodoUid,this.state.currentTodoParent);
+    this.props.deleteTodo(this.props.userId, this.state.currentTodoUid,this.state.currentTodoParent, this.props.token);
     this.setState({showDeleteModal: false});
 
     const todo = this.state.todo.filter((value) => (value.id !== this.state.currentTodoUid));
@@ -390,210 +400,221 @@ class ToDoListPage  extends Component {
     const disableGroupedBtns =  multipleSelected.length <= 0?"disabledInput":"";
     const disableSelectBtn = multipleSelected.length === folderSpecificList.length?"disabledInput":"";
     return(
-      <div className="pagestyles">
-        <Loader showLoader={showLoader} callBack={(status) => this.setState({showLoader: status})}>
-          {loaderText}
-        </Loader>
-        <div>
-          <input maxLength="100"
-                 onChange={this.handleMaxLength}
-                 className="toDoInput"
-                 onKeyDown={(e) => {
-                                      if (e.keyCode === 13) {
-                                          this.handleclick();
-                                      }
-                                    }}
-                 type="text"
-                 placeholder="Laundry"
-                 ref={this.inputText}
-            />
-          <div className="toDoFolder">
-            <label> <input type="checkbox"
-                     ref={this.folder}
-                     onChange={(e) => this.setState({folderChecked: e.currentTarget.checked})}
-                    />
-               Folder
-            </label>
+      <div>
+        <div className="pageHeader">
+          <div className="pageHeaderWelcome">
+            <p> Welcome {this.props.name} </p>
           </div>
-          <button className="toDoButton" onClick={this.handleclick}> Add{`${folderChecked?' Folder':' Item'}`} </button>
-        </div>
-        <div className="bannerContainer">
-          <Banner
-                status={bannerStatus}
-                closeAfter={bannerAfterClose}
-                showBanner={showBanner}
-                callBack={(status) => this.setState({showBanner: status})}>
-            {bannerMessage}
-          </Banner>
-        </div>
-        <div>
-          <div className="toDoFilter">
-            <label className="toDoFilterLabel"><b> Filter: </b></label>
-            <Dropdown
-              isDisabled={isDisabled}
-              className="filterTodoFolders"
-              dropdownSelectedItem={dropdownValue}
-              dropdownList={this.dropdownList}
-              callBack={this.dropdownFilterChanged}
-            />
-          </div>
-          <div className="toDoSort">
-            <label className="toDoSortLabel"><b> Sort By: </b></label>
-            <Dropdown
-              isDisabled={isDisabled}
-              className="groupByTodoItems"
-              dropdownSelectedItem={sortDropdownValue}
-              dropdownList={this.sortDropdownList}
-              callBack={this.dropdownSortChanged}
-            />
+          <div className="pageHeaderLogout">
+            <a href="#" onClick={() => this.props.logout() } className={`smallLinks logoutLink registerLink`} >Logout</a>
           </div>
         </div>
-        <div className="buttonGroup">
-          <button className={`toDoButton buttonGroupDelete ${disableGroupedBtns}`} onClick={() => {
-            this.setState({showDeleteModal: true});
-          }}> Delete </button>
-          <button className={`toDoButton buttonGroupMove ${disableGroupedBtns}`} onClick={() => {
-            this.setState({showFolderChangeModal: true});
-          }}> Move </button>
-          <button className={`toDoButton buttonGroupShare ${disableGroupedBtns}`}> Share </button>
-          <button className={`toDoButton buttonGroupSelectAll ${disableSelectBtn}`} onClick={() => {
-            this.setState({multipleSelected: folderSpecificList.map((a) => a.id)})}
-          }> Select all </button>
-          <button className={`toDoButton buttonGroupDeSelectAll ${disableGroupedBtns}`} onClick={() => {
-            this.setState({multipleSelected: []})}} > Deselect all </button>
-        </div>
-        <div className="toDoPrevious">
-          <PreviousFolders previous={previousFolders} currentFolder={currentFolderName} pagerFunc={this.handlePager} />
-        </div>
-        <div className={`noRecordsToDisplay ${folderSpecificList.length > 0?'d_none':'d_block'}`}>
-          {message}
-        </div>
-        <div className={`${folderSpecificList.length === 0?'d_none':'d_block'}`}>
-          {folderSpecificList.map((value, index) => value.isFolder?(
-                <div className={`todoRow`} key={index}>
-                  <CheckBox
-                      checked={multipleSelected.includes(value.id)}
-                      className="multiCheck"
-                      callBack={(checked) => this.processMultipleSelected(checked, value.id)}
-                  />
-                  <img
-                      src="editIcon.png"
-                      className="editImg"
-                      onClick={() => this.setState({showEditModal: true,
-                                                    currentTodoUid: value.id,
-                                                    currentTodoText: value.text})
-                                }
-                    />
-                  <span className={`${multipleSelected.length > 0 && !multipleSelected.includes(value.id)?'opacity0dot4':''}`}>
-                    <div className={` priorityColor ${value.priority === 1?'Low':value.priority === 2?'High':'None'}`}/>
-                    <span className={`todoRowHover`}>
-                      <div className={`todoRowFolder `}
-                           folderid={value.folderId}
-                           foldertext={value.text}
-                           onClick={this.handleFolderClick}>
-                        <img src="folder.png" className={`folderImg ${value.checked?'checkedFolder':''}`} />
-                        <span className={`${value.checked?'checked':''}`}> {value.text} </span>
-                      </div>
-                      <span className={`todoRowFolderDescription`}
-                            onClick={() => this.setState({ showSideBar: true, itemValue: value})}>
-                              <img src="details.png" className={`todoRowFolderDescriptionImg`} />
-                      </span>
-                    </span>
-                  </span>
-                </div>
-              ):(
-                <div className={`todoRow`} key={index}>
-                  <CheckBox checked={multipleSelected.includes(value.id)}
-                            className="multiCheck"
-                            callBack={(checked) => this.processMultipleSelected(checked, value.id)}
-                    />
-                  <img src="editIcon.png"
-                       className="editImg"
-                       onClick={() => this.setState({showEditModal: true,
-                                                     currentTodoUid: value.id,
-                                                     currentTodoText: value.text
-                                                      })
-                                }
-                    />
-                  <span className={` ${multipleSelected.length > 0 && !multipleSelected.includes(value.id)?'opacity0dot4':''} todoRowItem`}>
-                  <div className={` priorityColor ${value.priority === 1?'Low':value.priority === 2?'High':'None'}`}/>
-                    <TodoItem
-                       text={value.text}
-                       checked={value.checked===1}
-                       id={value.id}
-                       callBack={this.itemOnClick}/>
-                    <span className={`todoRowItemDescription`}
-                          onClick={() => this.setState({ showSideBar: true, itemValue: value})}>
-                            <img src="details.png" className={`todoRowItemDescriptionImg`} />
-                    </span>
-                  </span>
-                </div>
-             ))}
-        </div>
 
-        <SideBar
-            showSideBar={showSideBar}
-            itemValue={this.state.itemValue}
-            callBack={(s,changes,uid) => {
-                                          this.setState({showSideBar: s,
-                                          todo: this.state.todo.map((v) => {
-                                                        v.description = (v.id === uid)?changes.desc:v.description,
-                                                        v.priority = (v.id === uid)?changes.priority:v.priority
-                                                        return v;
-                                                        })})
-                                          }
-            }
-        />
-
-        <Modal showModal={showEditModal} callBack={(s) => this.setState({showEditModal: s})}>
-          <div className="editModal">
-            <h2 className="editModalHead"> Edit Item/Folder </h2>
-            <input
-              type="text"
-              ref={this.updateTodoText}
-              onKeyDown={(e) => { if(e.keyCode === 13) { this.editButtonClicked(); } }}
-              className="editModalInput"
-              placeholder = { currentTodoText}
-              defaultValue = { currentTodoText}
-            />
-
-
-            <div className="editModalButton" onClick={this.editButtonClicked}>
-                 Update </div>
+        <div className="pagestyles">
+          <Loader showLoader={showLoader} callBack={(status) => this.setState({showLoader: status})}>
+            {loaderText}
+          </Loader>
+          <div>
+            <input maxLength="100"
+                   onChange={this.handleMaxLength}
+                   className="toDoInput"
+                   onKeyDown={(e) => {
+                                        if (e.keyCode === 13) {
+                                            this.handleclick();
+                                        }
+                                      }}
+                   type="text"
+                   placeholder="Laundry"
+                   ref={this.inputText}
+              />
+            <div className="toDoFolder">
+              <label> <input type="checkbox"
+                       ref={this.folder}
+                       onChange={(e) => this.setState({folderChecked: e.currentTarget.checked})}
+                      />
+                 Folder
+              </label>
+            </div>
+            <button className="toDoButton" onClick={this.handleclick}> Add{`${folderChecked?' Folder':' Item'}`} </button>
           </div>
           <div className="bannerContainer">
             <Banner
-                  status={2}
-                  closeAfter={3}
-                  showBanner={showEditModalBanner}
-                  callBack={(status) => this.setState({showEditModalBanner: status})}>
-              {EditbannerMessage}
+                  status={bannerStatus}
+                  closeAfter={bannerAfterClose}
+                  showBanner={showBanner}
+                  callBack={(status) => this.setState({showBanner: status})}>
+              {bannerMessage}
             </Banner>
           </div>
-        </Modal>
-
-        <Modal showModal={showDeleteModal} callBack={(s) => this.setState({showDeleteModal: s})}>
-          <div className="deleteModal">
-            <div className="deleteModalMessage"> Are you sure you want to delete? </div>
-            <div className="deleteModalButtons">
-              <div className="deleteModalButtonsNo" onClick={() => this.setState({showDeleteModal: false})}>
-                Cancel
-              </div>
-              <div className="deleteModalButtonsYes" onClick= {this.deleteButtonClicked}>
-                Delete
-              </div>
+          <div>
+            <div className="toDoFilter">
+              <label className="toDoFilterLabel"><b> Filter: </b></label>
+              <Dropdown
+                isDisabled={isDisabled}
+                className="filterTodoFolders"
+                dropdownSelectedItem={dropdownValue}
+                dropdownList={this.dropdownList}
+                callBack={this.dropdownFilterChanged}
+              />
+            </div>
+            <div className="toDoSort">
+              <label className="toDoSortLabel"><b> Sort By: </b></label>
+              <Dropdown
+                isDisabled={isDisabled}
+                className="groupByTodoItems"
+                dropdownSelectedItem={sortDropdownValue}
+                dropdownList={this.sortDropdownList}
+                callBack={this.dropdownSortChanged}
+              />
             </div>
           </div>
-        </Modal>
-        <ChangeFolder showFolderChangeModal={showFolderChangeModal}
-                      currentFolder= {this.state.currentFolder}
-                      uid={multipleSelected}
-                      callBack={(s) => {
-                                          this.setState({showFolderChangeModal: s, multipleSelected: []});
-                                        }}
-                      executeOnMove={() => {
-                                      this.setState({multipleSelected: []});
-                                    }} />
+          <div className="buttonGroup">
+            <button className={`toDoButton buttonGroupDelete ${disableGroupedBtns}`} onClick={() => {
+              this.setState({showDeleteModal: true});
+            }}> Delete </button>
+            <button className={`toDoButton buttonGroupMove ${disableGroupedBtns}`} onClick={() => {
+              this.setState({showFolderChangeModal: true});
+            }}> Move </button>
+            <button className={`toDoButton buttonGroupShare ${disableGroupedBtns}`}> Share </button>
+            <button className={`toDoButton buttonGroupSelectAll ${disableSelectBtn}`} onClick={() => {
+              this.setState({multipleSelected: folderSpecificList.map((a) => a.id)})}
+            }> Select all </button>
+            <button className={`toDoButton buttonGroupDeSelectAll ${disableGroupedBtns}`} onClick={() => {
+              this.setState({multipleSelected: []})}} > Deselect all </button>
+          </div>
+          <div className="toDoPrevious">
+            <PreviousFolders previous={previousFolders} currentFolder={currentFolderName} pagerFunc={this.handlePager} />
+          </div>
+          <div className={`noRecordsToDisplay ${folderSpecificList.length > 0?'d_none':'d_block'}`}>
+            {message}
+          </div>
+          <div className={`${folderSpecificList.length === 0?'d_none':'d_block'}`}>
+            {folderSpecificList.map((value, index) => value.isFolder?(
+                  <div className={`todoRow`} key={index}>
+                    <CheckBox
+                        checked={multipleSelected.includes(value.id)}
+                        className="multiCheck"
+                        callBack={(checked) => this.processMultipleSelected(checked, value.id)}
+                    />
+                    <img
+                        src="editIcon.png"
+                        className="editImg"
+                        onClick={() => this.setState({showEditModal: true,
+                                                      currentTodoUid: value.id,
+                                                      currentTodoText: value.text})
+                                  }
+                      />
+                    <span className={`${multipleSelected.length > 0 && !multipleSelected.includes(value.id)?'opacity0dot4':''}`}>
+                      <div className={` priorityColor ${value.priority === 1?'Low':value.priority === 2?'High':'None'}`}/>
+                      <span className={`todoRowHover`}>
+                        <div className={`todoRowFolder `}
+                             folderid={value.folderId}
+                             foldertext={value.text}
+                             onClick={this.handleFolderClick}>
+                          <img src="folder.png" className={`folderImg ${value.checked?'checkedFolder':''}`} />
+                          <span className={`${value.checked?'checked':''}`}> {value.text} </span>
+                        </div>
+                        <span className={`todoRowFolderDescription`}
+                              onClick={() => this.setState({ showSideBar: true, itemValue: value})}>
+                                <img src="details.png" className={`todoRowFolderDescriptionImg`} />
+                        </span>
+                      </span>
+                    </span>
+                  </div>
+                ):(
+                  <div className={`todoRow`} key={index}>
+                    <CheckBox checked={multipleSelected.includes(value.id)}
+                              className="multiCheck"
+                              callBack={(checked) => this.processMultipleSelected(checked, value.id)}
+                      />
+                    <img src="editIcon.png"
+                         className="editImg"
+                         onClick={() => this.setState({showEditModal: true,
+                                                       currentTodoUid: value.id,
+                                                       currentTodoText: value.text
+                                                        })
+                                  }
+                      />
+                    <span className={` ${multipleSelected.length > 0 && !multipleSelected.includes(value.id)?'opacity0dot4':''} todoRowItem`}>
+                    <div className={` priorityColor ${value.priority === 1?'Low':value.priority === 2?'High':'None'}`}/>
+                      <TodoItem
+                         text={value.text}
+                         checked={value.checked===1}
+                         id={value.id}
+                         callBack={this.itemOnClick}/>
+                      <span className={`todoRowItemDescription`}
+                            onClick={() => this.setState({ showSideBar: true, itemValue: value})}>
+                              <img src="details.png" className={`todoRowItemDescriptionImg`} />
+                      </span>
+                    </span>
+                  </div>
+               ))}
+          </div>
+
+          <SideBar
+              showSideBar={showSideBar}
+              itemValue={this.state.itemValue}
+              callBack={(s,changes,uid) => {
+                                            this.setState({showSideBar: s,
+                                            todo: this.state.todo.map((v) => {
+                                                          v.description = (v.id === uid)?changes.desc:v.description,
+                                                          v.priority = (v.id === uid)?changes.priority:v.priority
+                                                          return v;
+                                                          })})
+                                            }
+              }
+          />
+
+          <Modal showModal={showEditModal} callBack={(s) => this.setState({showEditModal: s})}>
+            <div className="editModal">
+              <h2 className="editModalHead"> Edit Item/Folder </h2>
+              <input
+                type="text"
+                ref={this.updateTodoText}
+                onKeyDown={(e) => { if(e.keyCode === 13) { this.editButtonClicked(); } }}
+                className="editModalInput"
+                placeholder = { currentTodoText}
+                defaultValue = { currentTodoText}
+              />
+
+
+              <div className="editModalButton" onClick={this.editButtonClicked}>
+                   Update </div>
+            </div>
+            <div className="bannerContainer">
+              <Banner
+                    status={2}
+                    closeAfter={3}
+                    showBanner={showEditModalBanner}
+                    callBack={(status) => this.setState({showEditModalBanner: status})}>
+                {EditbannerMessage}
+              </Banner>
+            </div>
+          </Modal>
+
+          <Modal showModal={showDeleteModal} callBack={(s) => this.setState({showDeleteModal: s})}>
+            <div className="deleteModal">
+              <div className="deleteModalMessage"> Are you sure you want to delete? </div>
+              <div className="deleteModalButtons">
+                <div className="deleteModalButtonsNo" onClick={() => this.setState({showDeleteModal: false})}>
+                  Cancel
+                </div>
+                <div className="deleteModalButtonsYes" onClick= {this.deleteButtonClicked}>
+                  Delete
+                </div>
+              </div>
+            </div>
+          </Modal>
+          <ChangeFolder showFolderChangeModal={showFolderChangeModal}
+                        currentFolder= {this.state.currentFolder}
+                        uid={multipleSelected}
+                        callBack={(s) => {
+                                            this.setState({showFolderChangeModal: s, multipleSelected: []});
+                                          }}
+                        executeOnMove={() => {
+                                        this.setState({multipleSelected: []});
+                                      }} />
+        </div>
       </div>
     );
   }
@@ -604,7 +625,11 @@ function mapStateToProps(state) {
            initialState: state.todoReducer.initialState,
            saving: state.todoReducer.saving,
            errorSaving: state.todoReducer.errorSaving,
-           appError: state.todoReducer.appError
+           appError: state.todoReducer.appError,
+           loginSuccess: state.authenticationReducer.loginSuccess,
+           token: state.authenticationReducer.token,
+           name: state.authenticationReducer.name,
+           userId: state.authenticationReducer.userId
          };
 }
 
@@ -618,7 +643,7 @@ function mapDispatchToProps(dispatch) {
                              editTodo,
                              deleteTodo,
                              toggleSaving,
-                             deleteMultiple}, dispatch);
+                             deleteMultiple, logout}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps) (ToDoListPage);

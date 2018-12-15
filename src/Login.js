@@ -1,8 +1,13 @@
 import React , { Component } from 'react';
+import {withRouter} from 'react-router-dom';
 import Modal from './Modal';
 import './index.css';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { register, registrationError,
+        login, loginError } from './Actions/authentication.js';
 
-export default class Login extends Component {
+class Login extends Component {
   constructor(props){
     super(props);
 
@@ -19,15 +24,29 @@ export default class Login extends Component {
       passMatch: false,
       showForgotModal: false,
       loginEmail: "",
+      loginPassword: "",
       forgotPasswordEmail: "",
       }
 
     this.Register = this.Register.bind(this);
+    this.login = this.login.bind(this);
     this.modalCallBack = this.modalCallBack.bind(this);
     this.handleInputs = this.handleInputs.bind(this);
     this.forgotModalCallBack = this.forgotModalCallBack.bind(this);
     this.handleLoginInputs = this.handleLoginInputs.bind(this);
     this.forgotPassword = this.forgotPassword.bind(this);
+  }
+
+  componentWillMount(){
+    if(localStorage.getItem("token") === this.props.token && this.props.history) {
+        this.props.history.push("/todo");
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    if(nextProps.loginSuccess){
+      this.props.history.push("/todo");
+    }
   }
 
   modalCallBack(val){
@@ -42,6 +61,9 @@ export default class Login extends Component {
     if(e.currentTarget.name === "loginEmail"){
       this.setState({loginEmail:e.currentTarget.value, forgotPasswordEmail: e.currentTarget.value});
     }
+    if(e.currentTarget.name === "loginPassword") {
+      this.setState({loginPassword: e.currentTarget.value})
+    }
     if(e.currentTarget.name === "forgotPasswordEmail") {
       this.setState({forgotPasswordEmail: e.currentTarget.value});
     }
@@ -50,6 +72,13 @@ export default class Login extends Component {
   Register(){
     if(this.state.alphabets && this.state.numbers && this.state.passLength && this.state.match) {
     this.setState({showModal: false});
+    this.props.register(this.state.firstName,this.state.lastName, this.state.email, this.state.password);
+    }
+  }
+
+  login() {
+    if(this.state.loginEmail && this.state.loginPassword) {
+      this.props.login(this.state.loginEmail,this.state.loginPassword);
     }
   }
 
@@ -98,8 +127,10 @@ export default class Login extends Component {
           <label> Email: </label>
           <input className="loginPageInput" name="loginEmail" type="text" placeholder="abc@gmail.com" value={this.state.loginEmail} onChange={this.handleLoginInputs} /> <br/> <br/><br/>
           <label> Password: </label>
-          <input className="loginPageInput" type="password" placeholder="password" />
-          <a className="loginAnchorTag" href="/todo"><button className="loginButton"> Login </button> </a>
+          <input className="loginPageInput" name="loginPassword" value={this.state.loginPassword} onChange={this.handleLoginInputs} type="password" placeholder="password" />
+
+          <button onClick={this.login} onKeyDown={(e) => {if(e.keyCode === 13) {this.login}}}  className="loginButton"> Login </button>
+
           <a href="#" className={`smallLinks registerLink`} onClick={() => this.setState({showModal: true})}>Register</a>
           <a href="#" className="smallLinks" onClick={() => this.setState({showForgotModal: true})}> Forgot Password </a>
 
@@ -189,3 +220,19 @@ export default class Login extends Component {
     )
   }
 }
+
+
+function mapStateToProps(store) {
+  console.log(store);
+  return {loginSuccess: store.authenticationReducer.loginSuccess,
+          token: store.authenticationReducer.token};
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({register,
+                             registrationError,
+                             login,loginError,
+                             }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps) (withRouter(Login));

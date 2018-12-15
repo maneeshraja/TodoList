@@ -3,7 +3,17 @@ import {SAVE_TODO,EDIT_TODO,DELETE_TODO, api_url,UPDATE_TODO_ITEM_CHECKBOX,
         UPDATE_INITIALSTATE, TOGGLE_SAVING, ERROR_SAVING, TOGGLE_ERROR_SAVING,
         CHANGE_FOLDER,REMOVE_FROM_ITEMS, CHANGE_FOLDER_RETREIVE, FOLDER_CHANGE_ERROR,
         TOGGLE_CHANGE_FOLDER_SUCCESSFULL, MOVE_MULTIPLE, DELETE_MULTIPLE, TOGGLE_SUCCESS,
-        UPDATE_DESC, UPDATE_PRIORITY} from '../Constants';
+        UPDATE_DESC, UPDATE_PRIORITY,LOGOUT} from '../Constants';
+import {logout} from './authentication';
+
+const errorOccured = (err) => {
+
+  if(err.status === 401) {
+    return {type: LOGOUT};
+  } else {
+    return {type: APPLICATION_ERROR};
+  }
+}
 
 const itemsRetrieved = (resp) => {
   const action = {
@@ -154,51 +164,55 @@ export const changeFolder = (userId, uid, folderId) => {
         "uid": uid,
         "folderId": folderId
       })
-    }).then(response => response.json()).then(response => dispatch(changedFolder(response))).catch(dispatch({type: FOLDER_CHANGE_ERROR}))
+    }).then(response => response.json()).then(response => dispatch(changedFolder(response))).catch(dispatch(logout()))
   }
 }
 
-export const getInitialState = () => {
-  const url = `${api_url}/initialStats?userId=1`;
+export const getInitialState = (userId, token) => {
+  const url = `${api_url}/initialStats?userId=${userId}`;
   return dispatch => {
     fetch(url, {
       method: 'GET',
       headers: {
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
+        'X-Auth-Token': token
       }
     }).then(response => response.json())
       .then(response => dispatch(initialState(response)))
-      .catch(dispatch({type: APPLICATION_ERROR}))
+      .catch(err => dispatch(errorOccured(err)))
   }
 }
 
-export const retrieveTodo = (folderId) => {
-  const url = `${api_url}/items?folderId=${folderId}&userId=1`;
+export const retrieveTodo = (folderId,userId,token) => {
+  const url = `${api_url}/items?folderId=${folderId}&userId=${userId}`;
   return dispatch => {
     fetch(url, {
     method: 'GET', // or 'PUT'
     headers:{
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'X-Auth-Token': token
     }
-  }).then(res => res.json()).then(response => dispatch(itemsRetrieved(response)));
-
+  }).then(response => response.json())
+    .then(response => dispatch(itemsRetrieved(response)))
+    .catch(err => err.status===401?dispatch({type:LOGOUT}):err)
   }
 }
 
-export const changeFolderRetrieve = (folderId) => {
-  const url = `${api_url}/items?folderId=${folderId}&userId=1`;
+export const changeFolderRetrieve = (folderId, userId, token) => {
+  const url = `${api_url}/items?folderId=${folderId}&userId=${userId}`;
   return dispatch => {
     fetch(url, {
     method: 'GET', // or 'PUT'
     headers:{
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'X-Auth-Token': token
     }
   }).then(res => res.json()).then(response => dispatch(changeFolderReceived(response)));
 
   }
 }
 
-export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent) => {
+export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent, token) => {
   const url = `${api_url}/createItem`;
   const body = JSON.stringify({
     "userId": userId,
@@ -213,22 +227,24 @@ export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent)
     fetch(url, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
       },
       body
     }).then(res => res.json())
       .then(response => dispatch(savedTodo(body)))
-      .catch(error => dispatch({type:ERROR_SAVING}));
+      .catch(err => err.status===401?dispatch({type:LOGOUT}):dispatch({type:ERROR_SAVING}));
   }
 }
 
-export const updateTodoItemCheckBox = (userId, checked, uid, parent) => {
+export const updateTodoItemCheckBox = (userId, checked, uid, parent, token) => {
   const url = `${api_url}/updateTodoItem`;
   return dispatch => {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
       },
       body: JSON.stringify({
         "userId": userId,
@@ -240,13 +256,14 @@ export const updateTodoItemCheckBox = (userId, checked, uid, parent) => {
   }
 }
 
-export const deleteTodo = (userId,uid,parent) => {
+export const deleteTodo = (userId,uid,parent, token) => {
   const url = `${api_url}/deleteTodo`;
   return dispatch => {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
       },
       body: JSON.stringify({
         "userId": userId,
@@ -257,13 +274,14 @@ export const deleteTodo = (userId,uid,parent) => {
     }
 }
 
-export const editTodo = (userId,text,uid) => {
+export const editTodo = (userId,text,uid, token) => {
   const url = `${api_url}/editTodo`;
   return dispatch => {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
       },
       body: JSON.stringify({
         "userId": userId,
@@ -274,13 +292,14 @@ export const editTodo = (userId,text,uid) => {
   }
 }
 
-export const deleteMultiple = (userId, uids, parent) => {
+export const deleteMultiple = (userId, uids, parent,token) => {
   const url = `${api_url}/deleteTodoGroup`;
   return dispatch => {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
       },
       body: JSON.stringify({
         "userId": userId,
@@ -291,13 +310,14 @@ export const deleteMultiple = (userId, uids, parent) => {
   }
 }
 
-export const moveMultiple = (userId, uids, folderId) => {
+export const moveMultiple = (userId, uids, folderId,token) => {
   const url = `${api_url}/folderChangedGroup`;
   return dispatch => {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
       },
       body: JSON.stringify({
         "userId": userId,
@@ -308,13 +328,14 @@ export const moveMultiple = (userId, uids, folderId) => {
   }
 }
 
-export const updateDesc = (userId, uid, desc) => {
+export const updateDesc = (userId, uid, desc,token) => {
   const url = `${api_url}/setDescription`;
   return dispatch => {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
       },
       body: JSON.stringify({
         "userId": userId,
@@ -325,13 +346,14 @@ export const updateDesc = (userId, uid, desc) => {
   }
 }
 
-export const updatePriority = (userId, uid, priority) => {
+export const updatePriority = (userId, uid, priority,token) => {
   const url = `${api_url}/setPriority`;
   return dispatch => {
     fetch(url, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
       },
       body: JSON.stringify({
         "userId": userId,

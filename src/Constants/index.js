@@ -29,4 +29,10 @@ export const TOGGLE_SUCCESS = "TOGGLE_SUCCESS";
 export const UPDATE_DESC = "UPDATE_DESC";
 export const UPDATE_PRIORITY = "UPDATE_PRIORITY";
 
-export const api_url = "http://10.0.0.65:18982";  // 102 = Bhargav, 65 = rpi
+export const  REGISTER = "REGISTER";
+export const REGISTRATION_ERROR= "REGISTRATION_ERROR";
+export const  LOGIN = "LOGIN";
+export const  LOGOUT = "LOGOUT";
+export const LOGIN_ERROR="LOGIN_ERROR";
+
+export const api_url = "http://73.219.233.0:18982";  // 102 = Bhargav, 65 = rpi outside :http://73.219.233.0:18982/

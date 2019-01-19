@@ -1,9 +1,11 @@
-import { REGISTER, LOGIN, REGISTRATION_ERROR, LOGIN_ERROR, LOGOUT, api_url} from '../Constants';
+import { REGISTER, LOGIN, REGISTRATION_ERROR, LOGIN_ERROR, LOGOUT, CLEAR_MESSAGE,
+         UNLOCK_ACCOUNT, RESET_PASSWORD, RESET_ERROR, api_url} from '../Constants';
+import axios from 'axios';
 
-export const registered = () => {
+export const registered = (resp) => {
   return {
     type: REGISTER,
-    //data: status
+    data: resp,
   }
 }
 
@@ -14,24 +16,50 @@ export const loggedIn = (resp) => {
   }
 }
 
-export const registrationError = () => {
+export const unlockLinkSent = (resp) => {
   return {
-    type: REGISTRATION_ERROR,
-    //data: status
+    type: UNLOCK_ACCOUNT,
+    data: resp,
   }
 }
 
-export const loginError = () => {
+export const resetLinkSent = (resp) => {
+  return {
+    type: RESET_PASSWORD,
+    data: resp,
+  }
+}
+
+export const resetError = (resp) => {
+  return {
+    type: RESET_ERROR,
+    data: resp,
+  }
+}
+
+export const registrationError = (resp) => {
+  return {
+    type: REGISTRATION_ERROR,
+    data: resp,
+  }
+}
+
+export const loginError = (resp) => {
   return {
     type: LOGIN_ERROR,
-    //data:
+    data: resp,
   }
 }
 
 export const logout = () => {
   return{
     type: LOGOUT,
-    //data: resp
+  }
+}
+
+export const clearMessage = () => {
+  return{
+    type: CLEAR_MESSAGE,
   }
 }
 
@@ -44,15 +72,12 @@ export const register = (firstName, lastName, email, password) => {
     "password": password
   });
   return dispatch => {
-    fetch(url,{
-      method: 'POST',
+    axios.post(url,body,{
       headers: {
         'Content-Type': 'application/json'
-      },
-      body
-    }).then(res => res.json())
-      .then(response => dispatch(registered(body)))
-      .catch(error => dispatch(registrationError()));
+      }
+    }).then(response => dispatch(registered(response.data)))
+      .catch(error => dispatch(registrationError(error.response)));
   }
 }
 
@@ -63,14 +88,38 @@ export const login = (email, password) => {
     "password": password
   });
   return dispatch => {
-    fetch(url,{
-      method: 'POST',
+    axios.post(url,body,{
       headers: {
         'Content-Type': 'application/json'
-      },
-      body
-    }).then(res => res.json())
-      .then(response => dispatch(loggedIn(response)))
-      .catch(error => dispatch(loginError()));
+      }}).then(response => dispatch(loggedIn(response.data)))
+           .catch(error => dispatch(loginError(error.response)));
+  }
+}
+
+export const unlockAccount = (email) => {
+  const url = `${api_url}/unlock`;
+  const body= JSON.stringify({
+    "email": email,
+  });
+  return dispatch => {
+    axios.post(url,body,{
+      headers: {
+        'Content-Type': 'application/json'
+      }}).then(response => dispatch(unlockLinkSent(response.data)))
+           .catch(error => dispatch(resetError(error.response)));
+  }
+}
+
+export const forgotPassword = (email) => {
+  const url = `${api_url}/forgot`;
+  const body= JSON.stringify({
+    "email": email,
+  });
+  return dispatch => {
+    axios.post(url,body,{
+      headers: {
+        'Content-Type': 'application/json'
+      }}).then(response => dispatch(resetLinkSent(response.data)))
+           .catch(error => dispatch(resetError(error.response)));
   }
 }

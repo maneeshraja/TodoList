@@ -5,7 +5,10 @@ import './index.css';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { register, registrationError,
-        login, loginError } from './Actions/authentication.js';
+        login, loginError, clearMessage,
+        unlockAccount, forgotPassword,} from './Actions/authentication.js';
+import Banner from './Banner';
+
 
 class Login extends Component {
   constructor(props){
@@ -26,7 +29,12 @@ class Login extends Component {
       loginEmail: "",
       loginPassword: "",
       forgotPasswordEmail: "",
-      }
+      showBanner: false,
+      bannerMessage: "Login Failed",
+      bannerStatus: 3,
+      bannerLabel: "",
+      bannerAction: false,
+    };
 
     this.Register = this.Register.bind(this);
     this.login = this.login.bind(this);
@@ -46,6 +54,14 @@ class Login extends Component {
   componentWillReceiveProps(nextProps){
     if(nextProps.loginSuccess){
       this.props.history.push("/todo");
+    }
+    if(nextProps.loginSuccess || nextProps.registrationSuccess || nextProps.logoutSuccess){
+      this.setState({bannerStatus:1});
+    }
+    if(nextProps.messageText){
+      this.setState({showBanner: true, bannerMessage: nextProps.messageText});
+    }else {
+      this.setState({showBanner: false})
     }
   }
 
@@ -84,6 +100,11 @@ class Login extends Component {
 
   forgotPassword() {
     this.setState({showForgotModal: false});
+    if(this.state.bannerAction){
+      this.props.unlockAccount(this.state.forgotPasswordEmail);
+    } else{
+      this.props.forgotPassword(this.state.forgotPasswordEmail);
+    }
   }
 
   handleInputs(e){
@@ -127,12 +148,25 @@ class Login extends Component {
           <label> Email: </label>
           <input className="loginPageInput" name="loginEmail" type="text" placeholder="abc@gmail.com" value={this.state.loginEmail} onChange={this.handleLoginInputs} /> <br/> <br/><br/>
           <label> Password: </label>
-          <input className="loginPageInput" name="loginPassword" value={this.state.loginPassword} onChange={this.handleLoginInputs} type="password" placeholder="password" />
+          <input className="loginPageInput" name="loginPassword" value={this.state.loginPassword} onChange={this.handleLoginInputs} onKeyDown={(e) => {if(e.keyCode === 13) {this.login}}}  type="password" placeholder="password"/>
 
           <button onClick={this.login} onKeyDown={(e) => {if(e.keyCode === 13) {this.login}}}  className="loginButton"> Login </button>
 
-          <a href="#" className={`smallLinks registerLink`} onClick={() => this.setState({showModal: true})}>Register</a>
-          <a href="#" className="smallLinks" onClick={() => this.setState({showForgotModal: true})}> Forgot Password </a>
+          <a href="#" className={`smallLinks registerLink`} onClick={() => {this.props.clearMessage();this.setState({showModal: true})}}>Register</a>
+          <a href="#" className="smallLinks forgotPasswordLink" onClick={() => {this.props.clearMessage();this.setState({showForgotModal: true, bannerLabel: "Forgot Password", bannerAction: false})}}> Forgot Password </a>
+          <a href="#" className="smallLinks unlockAccountLink" onClick={() => {this.props.clearMessage();this.setState({showForgotModal: true, bannerLabel: "Unlock Account", bannerAction: true})}}> Unlock Account </a>
+
+          <div className="loginBannerContainer">
+            <Banner
+                  status={this.state.bannerStatus}
+                  closeAfter={this.state.bannerAfterClose}
+                  showBanner={this.state.showBanner}
+                  closeButton={false}
+                  className={`loginBanner`}
+                  callBack={(status) => this.setState({showBanner: status})}>
+              {this.state.bannerMessage}
+            </Banner>
+          </div>
 
           <Modal callBack={this.modalCallBack} showModal={this.state.showModal}>
             <div className="registerModal">
@@ -196,7 +230,7 @@ class Login extends Component {
 
           <Modal callBack={this.forgotModalCallBack} showModal={this.state.showForgotModal}>
             <div className="forgotModal">
-              <h3 className="forgotModalHeading"> Forgot Password</h3>
+              <h3 className="forgotModalHeading"> {this.state.bannerLabel}</h3>
               <form onSubmit={(e) => e.preventDefault()}>
               <table className="forgotModalForm">
                 <tbody>
@@ -223,16 +257,19 @@ class Login extends Component {
 
 
 function mapStateToProps(store) {
-  console.log(store);
   return {loginSuccess: store.authenticationReducer.loginSuccess,
-          token: store.authenticationReducer.token};
+          token: store.authenticationReducer.token,
+          messageText: store.authenticationReducer.messageText,
+          registrationSuccess: store.authenticationReducer.registrationSuccess,
+          logoutSuccess: store.authenticationReducer.logoutSuccess,
+          };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({register,
                              registrationError,
-                             login,loginError,
-                             }, dispatch);
+                             login,loginError,clearMessage,
+                             unlockAccount, forgotPassword}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps) (withRouter(Login));

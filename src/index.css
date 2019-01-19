@@ -2,7 +2,6 @@
   margin:50px 100px;
   border: 2px solid darkgray;
   width: 200px;
-  height: 330px;
   padding: 20px;
   border-radius: 20px;
 }
@@ -57,10 +56,13 @@
     margin-bottom:  10px;
     display: block;
     float: left;
+    margin-right: 90px;
 }
-.registerLink{
-  margin-right: 90px;
+
+.unlockAccountLink{
+    margin-right: 0px;
 }
+
 .loginHeading{
     text-align: center;
     margin: 0px;
@@ -130,4 +132,20 @@
 
 .loginAnchorTag{
   text-decoration: none;
+}
+
+.loginBannerContainer{
+  margin-top: 100px;
+}
+
+.loginBanner{
+  min-height: 20px !important;
+  line-height: 20px !important;
+  font-size: 12px;
+  padding-right: 0px !important;
+  width: 85% !important;
+}
+
+.registerModalForm,.forgotModalForm tr td:first-child{
+  vertical-align: bottom;
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Switch, Redirect, Route } from "react-router-dom";
 import Login from './Login.js';
 import ToDoListPage from './TodoListPage.js';
-import Settings from './Settings.js'
+import Settings from './Settings.js';
 
 const Routes = () => {
   return (

@@ -5,6 +5,7 @@ import {SAVE_TODO,EDIT_TODO,DELETE_TODO, api_url,UPDATE_TODO_ITEM_CHECKBOX,
         TOGGLE_CHANGE_FOLDER_SUCCESSFULL, MOVE_MULTIPLE, DELETE_MULTIPLE, TOGGLE_SUCCESS,
         UPDATE_DESC, UPDATE_PRIORITY,LOGOUT} from '../Constants';
 import {logout} from './authentication';
+import axios from 'axios';
 
 const errorOccured = (err) => {
 
@@ -154,60 +155,53 @@ export const updatedPriority = () => {
 export const changeFolder = (userId, uid, folderId) => {
   const url = `${api_url}/folderChanged`;
   return dispatch => {
-    fetch(url, {
-      method: 'PUT',
+    axios.put(url,JSON.stringify({
+      "userId":userId,
+      "uid": uid,
+      "folderId": folderId
+    }), {
       headers: {
         'Content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        "userId":userId,
-        "uid": uid,
-        "folderId": folderId
-      })
-    }).then(response => response.json()).then(response => dispatch(changedFolder(response))).catch(dispatch(logout()))
+      }}).then(response => dispatch(changedFolder(response.data)))
+         .catch(err => err.response.status===401?dispatch(logout()):err)
   }
 }
 
 export const getInitialState = (userId, token) => {
   const url = `${api_url}/initialStats?userId=${userId}`;
   return dispatch => {
-    fetch(url, {
-      method: 'GET',
+    axios.get(url, {
       headers: {
         'Content-type': 'application/json',
         'X-Auth-Token': token
       }
-    }).then(response => response.json())
-      .then(response => dispatch(initialState(response)))
-      .catch(err => dispatch(errorOccured(err)))
+    }).then(response => dispatch(initialState(response.data)))
+      .catch(err => err.response.status===401?dispatch(errorOccured(err)):err)
   }
 }
 
 export const retrieveTodo = (folderId,userId,token) => {
   const url = `${api_url}/items?folderId=${folderId}&userId=${userId}`;
   return dispatch => {
-    fetch(url, {
-    method: 'GET', // or 'PUT'
-    headers:{
-      'Content-Type': 'application/json',
-      'X-Auth-Token': token
+    axios.get(url, {
+      headers:{
+        'Content-Type': 'application/json',
+        'X-Auth-Token': token
+      }
+    }).then(response => dispatch(itemsRetrieved(response.data)))
+      .catch(err => err.response.status===401?dispatch({type:LOGOUT}):err)
     }
-  }).then(response => response.json())
-    .then(response => dispatch(itemsRetrieved(response)))
-    .catch(err => err.status===401?dispatch({type:LOGOUT}):err)
-  }
 }
 
 export const changeFolderRetrieve = (folderId, userId, token) => {
   const url = `${api_url}/items?folderId=${folderId}&userId=${userId}`;
   return dispatch => {
-    fetch(url, {
-    method: 'GET', // or 'PUT'
+    axios.get(url, {
     headers:{
       'Content-Type': 'application/json',
       'X-Auth-Token': token
     }
-  }).then(res => res.json()).then(response => dispatch(changeFolderReceived(response)));
+  }).then(response => dispatch(changeFolderReceived(response.data)));
 
   }
 }
@@ -224,142 +218,126 @@ export const saveTodo = (userId, isFolder, checked, text, folderId, uid, parent,
     "parent": parent
   });
   return dispatch => {
-    fetch(url, {
-      method: 'POST',
+    axios.post(url,body, {
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': token
-      },
-      body
-    }).then(res => res.json())
-      .then(response => dispatch(savedTodo(body)))
-      .catch(err => err.status===401?dispatch({type:LOGOUT}):dispatch({type:ERROR_SAVING}));
+      }}).then(response => dispatch(savedTodo(body)))
+      .catch(err => err.response.status===401?dispatch({type:LOGOUT}):dispatch({type:ERROR_SAVING}));
   }
 }
 
 export const updateTodoItemCheckBox = (userId, checked, uid, parent, token) => {
   const url = `${api_url}/updateTodoItem`;
+  const body = JSON.stringify({
+    "userId": userId,
+    "checked": checked,
+    "uid": uid,
+    "parent": parent
+  });
   return dispatch => {
-    fetch(url, {
-      method: 'PUT',
+    axios.put(url,
+      body,
+      {
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': token
-      },
-      body: JSON.stringify({
-        "userId": userId,
-        "checked": checked,
-        "uid": uid,
-        "parent": parent
-      })
-    }).then(res => res.json()).then(response => dispatch(updatedTodoItemCheckBox(response)));
+      }}).then(response => dispatch(updatedTodoItemCheckBox(response.data)));
   }
 }
 
 export const deleteTodo = (userId,uid,parent, token) => {
   const url = `${api_url}/deleteTodo`;
+  const body= JSON.stringify({
+    "userId": userId,
+    "uid": uid,
+    "parent": parent
+  });
   return dispatch => {
-    fetch(url, {
-      method: 'PUT',
+    axios.put(url,body,{
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': token
-      },
-      body: JSON.stringify({
-        "userId": userId,
-        "uid": uid,
-        "parent": parent
-      })
-    }).then(res => res.json()).then(response => dispatch(deletedTodo(response, uid)));
+      }}).then(response => dispatch(deletedTodo(response.data, uid)));
     }
 }
 
 export const editTodo = (userId,text,uid, token) => {
   const url = `${api_url}/editTodo`;
+  const body = JSON.stringify({
+    "userId": userId,
+    "text": text,
+    "uid": uid
+  });
   return dispatch => {
-    fetch(url, {
-      method: 'PUT',
+    axios.put(url,body,{
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': token
-      },
-      body: JSON.stringify({
-        "userId": userId,
-        "text": text,
-        "uid": uid
-      })
-    }).then(res => res.json()).then(response => dispatch(editedTodo(response)));
+      }}).then(response => dispatch(editedTodo(response.data)));
   }
 }
 
 export const deleteMultiple = (userId, uids, parent,token) => {
   const url = `${api_url}/deleteTodoGroup`;
+  const body = JSON.stringify({
+    "userId": userId,
+    "uid": uids,
+    "parent": parent
+  });
   return dispatch => {
-    fetch(url, {
-      method: 'PUT',
+    axios.put(url,body,{
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': token
-      },
-      body: JSON.stringify({
-        "userId": userId,
-        "uid": uids,
-        "parent": parent
-      })
-    }).then(resp => resp.json()).then(response => dispatch(deleteMultipleHandle(response)));
+      }}).then(response => dispatch(deleteMultipleHandle(response.data)));
   }
 }
 
 export const moveMultiple = (userId, uids, folderId,token) => {
   const url = `${api_url}/folderChangedGroup`;
+  const body = JSON.stringify({
+    "userId": userId,
+    "uid": uids,
+    "folderId": folderId
+  });
   return dispatch => {
-    fetch(url, {
-      method: 'PUT',
+    axios.put(url,body,{
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': token
-      },
-      body: JSON.stringify({
-        "userId": userId,
-        "uid": uids,
-        "folderId": folderId
-      })
-    }).then(resp => resp.json()).then(response => dispatch(moveMultipleHandle(response)));
+      }}).then(response => dispatch(moveMultipleHandle(response.data)));
   }
 }
 
 export const updateDesc = (userId, uid, desc,token) => {
   const url = `${api_url}/setDescription`;
+  const body = JSON.stringify({
+    "userId": userId,
+    "uid": uid,
+    "description": desc
+  });
   return dispatch => {
-    fetch(url, {
-      method: 'PUT',
+    axios.put(url,body,{
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': token
-      },
-      body: JSON.stringify({
-        "userId": userId,
-        "uid": uid,
-        "description": desc
-      })
-    }).then(res => res.json()).then(response => dispatch(updatedDesc(response)));
+      }}).then(response => dispatch(updatedDesc(response.data)));
   }
 }
 
 export const updatePriority = (userId, uid, priority,token) => {
   const url = `${api_url}/setPriority`;
+  const body = JSON.stringify({
+    "userId": userId,
+    "uid": uid,
+    "priority": priority
+  });
   return dispatch => {
-    fetch(url, {
-      method: 'PUT',
+    axios.put(url,body,{
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': token
-      },
-      body: JSON.stringify({
-        "userId": userId,
-        "uid": uid,
-        "priority": priority
-      })
-    }).then(res => res.json()).then(response => dispatch(updatedPriority(response)));
+      }}).then(response => dispatch(updatedPriority(response.data)));
   }
 }

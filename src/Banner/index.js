@@ -70,7 +70,7 @@ export default class Banner extends Component{
     return(
       <div>
         {this.state.showBanner?(
-          <div className={`banner ${color}`}>
+          <div className={`${this.props.className?this.props.className:""} banner ${color}`}>
             {this.props.children}
             <div className={`${showCloseButton?'d_block':'d_none'} bannerButtonClose`} onClick={this.closeBanner}> + </div>
           </div>
@@ -91,5 +91,6 @@ Banner.propTypes = {
   showBanner: PropTypes.bool,
   callBack: PropTypes.func,
   closeAfter: PropTypes.number,
-  closeButton: PropTypes.bool
+  closeButton: PropTypes.bool,
+  className: PropTypes.string,
 }
